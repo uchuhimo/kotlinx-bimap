@@ -1,10 +1,12 @@
 buildscript {
-	repositories {
+    repositories {
         //maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
         jcenter()
     }
     dependencies {
         classpath "org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4"
+        classpath "com.novoda:bintray-release:0.5.0"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.15"
     }
 }
 
@@ -12,11 +14,14 @@ plugins {
     id "com.dorongold.task-tree" version "1.2.2"
     id "org.jetbrains.kotlin.jvm" version "1.1.3"
     id "com.diffplug.gradle.spotless" version "3.4.0"
+    id "nebula.javadoc-jar" version "5.1.0"
+    id "nebula.source-jar" version "5.1.0"
 }
 
 apply plugin: "java"
 apply plugin: "org.junit.platform.gradle.plugin"
-apply plugin: 'maven-publish'
+apply plugin: "com.novoda.bintray-release"
+apply plugin: "org.jetbrains.dokka"
 
 group "com.uchuhimo"
 version "0.2"
@@ -24,6 +29,11 @@ version "0.2"
 ext {
     kotlinVersion = "1.1.3"
     spekVersion = "1.1.2"
+
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file("private.properties").newDataInputStream())
+    bintrayUserProperty = properties.getProperty("bintrayUser")
+    bintrayKeyProperty = properties.getProperty("bintrayKey")
 }
 
 repositories {
@@ -48,9 +58,9 @@ junitPlatform {
 }
 
 dependencies {
-	compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-	compile "com.google.guava:guava:22.0"
-	testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    compile "com.google.guava:guava:22.0"
+    testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
     testCompile "com.natpryce:hamkrest:1.4.0.0"
     testRuntime "org.junit.platform:junit-platform-launcher:1.0.0-M4"
     ["spek-api", "spek-data-driven-extension", "spek-subject-extension"].each {
@@ -90,10 +100,22 @@ spotless {
     }
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
+dokka {
+    outputFormat = "javadoc"
+    outputDirectory = javadoc.destinationDir
+}
+
+javadoc.dependsOn dokka
+
+publish {
+    userOrg = "uchuhimo"
+    groupId = "com.uchuhimo"
+    artifactId = "kotlinx-bimap"
+    publishVersion = project.version
+    licences = ["Apache-2.0"]
+    desc = "a bidirectional map implementation for Kotlin"
+    website = "https://github.com/uchuhimo/kotlinx-bimap"
+    bintrayUser = bintrayUserProperty
+    bintrayKey = bintrayKeyProperty
+    dryRun = false
 }
