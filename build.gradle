@@ -35,6 +35,9 @@ ext {
         properties.load(project.rootProject.file("private.properties").newDataInputStream())
         bintrayUserProperty = properties.getProperty("bintrayUser")
         bintrayKeyProperty = properties.getProperty("bintrayKey")
+    } else {
+        bintrayUserProperty = ""
+        bintrayKeyProperty = ""
     }
 }
 
