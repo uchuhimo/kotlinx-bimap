@@ -11,25 +11,23 @@ buildscript {
 plugins {
     id "com.dorongold.task-tree" version "1.2.2"
     id "org.jetbrains.kotlin.jvm" version "1.1.3"
-    id "org.jetbrains.kotlin.plugin.allopen" version "1.1.3"
-    id "me.champeau.gradle.jmh" version "0.4.4"
     id "com.diffplug.gradle.spotless" version "3.4.0"
 }
 
+apply plugin: "java"
+apply plugin: "org.junit.platform.gradle.plugin"
 apply plugin: 'maven-publish'
 
 group "com.uchuhimo"
 version "0.2"
 
 ext {
+    aliyunMavenUrl = "http://maven.aliyun.com/nexus/content/groups/public"
     kotlinVersion = "1.1.3"
     spekVersion = "1.1.2"
-    junitJupiterVersion = "5.0.0-M4"
-    aliyunMavenUrl = "http://maven.aliyun.com/nexus/content/groups/public"
 }
 
 repositories {
-    mavenLocal()
     //mavenCentral()
     maven { url aliyunMavenUrl }
     jcenter()
@@ -40,45 +38,23 @@ task wrapper(type: Wrapper) {
     distributionType = Wrapper.DistributionType.ALL
 }
 
-dependencies {
-    compile "com.google.guava:guava:22.0"
-}
-
-apply plugin: "java"
-apply plugin: "kotlin"
-apply plugin: "kotlin-allopen"
-apply plugin: "me.champeau.gradle.jmh"
-apply plugin: "org.junit.platform.gradle.plugin"
-apply plugin: "com.diffplug.gradle.spotless"
-
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
 
 junitPlatform {
     filters {
         engines {
-            include "spek", "junit-jupiter"
+            include "spek"
         }
     }
 }
 
-afterEvaluate {
-    junitPlatformTest {
-        systemProperty "line.separator", "\n"
-    }
-}
-
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlinVersion"
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-//    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
-//    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
-//    testCompile "junit:junit:4.12"
+	compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+	compile "com.google.guava:guava:22.0"
+	testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
     testCompile "com.natpryce:hamkrest:1.4.0.0"
-    testCompile "org.hamcrest:hamcrest-all:1.3"
     testRuntime "org.junit.platform:junit-platform-launcher:1.0.0-M4"
-    testCompile "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
     ["spek-api", "spek-data-driven-extension", "spek-subject-extension"].each {
         testCompile("org.jetbrains.spek:$it:$spekVersion") {
             exclude group: "org.jetbrains.kotlin"
@@ -98,52 +74,23 @@ tasks.withType(Test) {
     testLogging.showStandardStreams = true
 }
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 tasks.withType(KotlinCompile) {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "1.6"
         apiVersion = "1.1"
         languageVersion = "1.1"
     }
 }
 
-allOpen {
-    annotation("org.openjdk.jmh.annotations.BenchmarkMode")
-    annotation("org.openjdk.jmh.annotations.State")
-}
-
-jmh {
-    iterations = 10 // Number of measurement iterations to do.
-//    benchmarkMode = ["thrpt"] // Benchmark mode. Available modes are: [Throughput/thrpt, AverageTime/avgt, SampleTime/sample, SingleShotTime/ss, All/all]
-    batchSize = 1
-    // Batch size: number of benchmark method calls per operation. (some benchmark modes can ignore this setting)
-    fork = 1 // How many times to forks a single benchmark. Use 0 to disable forking altogether
-//    operationsPerInvocation = 1 // Operations per invocation.
-    timeOnIteration = "1s" // Time to spend at each measurement iteration.
-    threads = 4 // Number of worker threads to run with.
-    timeout = "10s" // Timeout for benchmark iteration.
-//    timeUnit = "ns" // Output time unit. Available time units are: [m, s, ms, us, ns].
-    warmup = "1s" // Time to spend at each warmup iteration.
-    warmupBatchSize = 1 // Warmup batch size: number of benchmark method calls per operation.
-//    warmupForks = 0 // How many warmup forks to make for a single benchmark. 0 to disable warmup forks.
-    warmupIterations = 10 // Number of warmup iterations to do.
-    zip64 = false // Use ZIP64 format for bigger archives
-    jmhVersion = "1.19" // Specifies JMH version
-}
-
 spotless {
-    java {
-        googleJavaFormat("1.3")
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
     kotlin {
         ktlint("0.8.3")
         trimTrailingWhitespace()
         endWithNewline()
     }
 }
-
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 publishing {
     publications {
