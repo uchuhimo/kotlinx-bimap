@@ -2,8 +2,6 @@ buildscript {
     ext {
         aliyunMavenUrl = "http://maven.aliyun.com/nexus/content/groups/public"
         junitPlatformVersion = "1.0.0-M4"
-        kotlinVersion = "1.1.3"
-        spekVersion = "1.1.2"
 
         if (project.rootProject.file("private.properties").exists()) {
             Properties properties = new Properties()
@@ -32,6 +30,7 @@ plugins {
     id "com.diffplug.gradle.spotless" version "3.4.0"
     id "nebula.javadoc-jar" version "5.1.0"
     id "nebula.source-jar" version "5.1.0"
+    id "io.spring.dependency-management" version "1.0.3.RELEASE"
 }
 
 apply plugin: "java"
@@ -63,21 +62,46 @@ junitPlatform {
     }
 }
 
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    compile "com.google.guava:guava:22.0"
-    testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-    testCompile "com.natpryce:hamkrest:1.4.0.0"
-    testRuntime "org.junit.platform:junit-platform-launcher:$junitPlatformVersion"
-    ["spek-api", "spek-data-driven-extension", "spek-subject-extension"].each {
-        testCompile("org.jetbrains.spek:$it:$spekVersion") {
-            exclude group: "org.jetbrains.kotlin"
+dependencyManagement {
+    dependencies {
+        dependency "com.google.guava:guava:22.0"
+
+        dependencySet(group: "org.jetbrains.kotlin", version: "1.1.3") {
+            entry "kotlin-stdlib"
+            entry "kotlin-reflect"
+            entry "kotlin-test"
         }
     }
-    testCompile("org.jetbrains.spek:spek-junit-platform-engine:$spekVersion") {
-        exclude group: "org.junit.platform"
-        exclude group: "org.jetbrains.kotlin"
+
+    testImplementation {
+        dependencies {
+            dependency "com.natpryce:hamkrest:1.4.1.0"
+            dependency "org.hamcrest:hamcrest-all:1.3"
+
+            dependency "org.junit.platform:junit-platform-launcher:$junitPlatformVersion"
+
+            dependencySet(group: "org.jetbrains.spek", version: "1.1.2") {
+                entry "spek-api"
+                entry "spek-data-driven-extension"
+                entry "spek-subject-extension"
+                entry "spek-junit-platform-engine"
+            }
+        }
     }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "com.google.guava:guava"
+
+    testImplementation "org.jetbrains.kotlin:kotlin-reflect"
+    testImplementation "com.natpryce:hamkrest"
+    testImplementation "org.jetbrains.spek:spek-api"
+    testImplementation "org.jetbrains.spek:spek-data-driven-extension"
+    testImplementation "org.jetbrains.spek:spek-subject-extension"
+
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    testRuntimeOnly "org.jetbrains.spek:spek-junit-platform-engine"
 }
 
 tasks.withType(JavaCompile) {
