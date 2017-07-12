@@ -8,7 +8,7 @@ A BiMap (bidirectional map) implementation for Kotlin.
 
 ## Using in your projects
 
-The libraries are published to  [JCenter](https://bintray.com/uchuhimo/maven/kotlinx-bimap) and [JitPack](https://jitpack.io/#uchuhimo/kotlinx-bimap).
+This library are published to  [JCenter](https://bintray.com/uchuhimo/maven/kotlinx-bimap) and [JitPack](https://jitpack.io/#uchuhimo/kotlinx-bimap).
 
 ### Maven
 
