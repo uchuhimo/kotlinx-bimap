@@ -49,7 +49,7 @@ apply {
 }
 
 group = "com.uchuhimo"
-version = "0.2"
+version = "0.3"
 
 repositories {
     //maven { url = java.net.URI("http://maven.aliyun.com/nexus/content/groups/public") }
