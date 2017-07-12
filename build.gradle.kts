@@ -197,7 +197,7 @@ tasks {
     whenObjectAdded {
         if (name == "generatePomFileForMavenPublication") {
             "bintrayUpload" {
-                dependsOn(this)
+                dependsOn(this@whenObjectAdded)
             }
         } else if (name == "publishToMavenLocal") {
             install.dependsOn(this)
