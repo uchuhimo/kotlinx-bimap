@@ -36,6 +36,7 @@ if (project.rootProject.file("private.properties").exists()) {
 plugins {
     `build-scan`
     java
+    jacoco
     kotlin("jvm") version "1.1.3-2"
     id("com.dorongold.task-tree") version "1.3"
     id("com.diffplug.gradle.spotless") version "3.4.0"
@@ -161,6 +162,27 @@ configure<SpotlessExtension> {
     }
 }
 
+afterEvaluate {
+    tasks {
+        val junitPlatformTest = "junitPlatformTest"(JavaExec::class)
+        configure<JacocoPluginExtension> {
+            toolVersion = "0.7.9"
+            applyTo(junitPlatformTest)
+        }
+        val jacocoJunitPlatformReport by creating(JacocoReport::class) {
+            executionData(junitPlatformTest)
+            sourceSets(java.sourceSets["main"])
+            sourceDirectories = files(java.sourceSets["main"].allSource.srcDirs)
+            classDirectories = files(java.sourceSets["main"].output)
+            reports {
+                xml.isEnabled = true
+                html.isEnabled = true
+            }
+        }
+        "check"().dependsOn(jacocoJunitPlatformReport)
+    }
+}
+
 tasks {
     "dokka"(DokkaTask::class) {
         outputFormat = "html"
@@ -183,12 +205,8 @@ configure<PublishExtension> {
 
 afterEvaluate {
     tasks {
-        "mavenJavadocJar" {
-            dependsOn("dokka")
-        }
-        "bintrayUpload" {
-            dependsOn("jar", "mavenJavadocJar", "mavenSourcesJar", "check")
-        }
+        "mavenJavadocJar"().dependsOn("dokka")
+        "bintrayUpload"().dependsOn("jar", "mavenJavadocJar", "mavenSourcesJar", "check")
     }
 }
 
@@ -196,9 +214,7 @@ tasks {
     val install by creating
     whenObjectAdded {
         if (name == "generatePomFileForMavenPublication") {
-            "bintrayUpload" {
-                dependsOn(this@whenObjectAdded)
-            }
+            "bintrayUpload"().dependsOn(this@whenObjectAdded)
         } else if (name == "publishToMavenLocal") {
             install.dependsOn(this)
         }
