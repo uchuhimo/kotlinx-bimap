@@ -159,7 +159,7 @@ configure<SpotlessExtension> {
         ktlint("0.8.3")
         trimTrailingWhitespace()
         endWithNewline()
-        licenseHeaderFile(rootProject.file("config/spotless/apache-license-2.0.java"))
+        licenseHeaderFile(rootProject.file("config/spotless/apache-license-2.0.kt"))
     }
 }
 
