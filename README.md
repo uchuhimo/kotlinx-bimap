@@ -1,5 +1,6 @@
 # kotlinx-bimap
 
+[![Java 6+](https://img.shields.io/badge/Java-6+-4c7e9f.svg)](http://java.oracle.com)
 [![Bintray](https://api.bintray.com/packages/uchuhimo/maven/kotlinx-bimap/images/download.svg)](https://bintray.com/uchuhimo/maven/kotlinx-bimap/_latestVersion)
 [![JitPack](https://jitpack.io/v/uchuhimo/kotlinx-bimap.svg)](https://jitpack.io/#uchuhimo/kotlinx-bimap)
 [![Build Status](https://travis-ci.org/uchuhimo/kotlinx-bimap.svg?branch=master)](https://travis-ci.org/uchuhimo/kotlinx-bimap)
