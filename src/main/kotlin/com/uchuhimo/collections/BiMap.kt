@@ -22,7 +22,7 @@ interface BiMap<K, V> : Map<K, V> {
     override val values: Set<V>
 }
 
-private class BiMapImpl<K, V> private constructor(private val delegate: Map<K, V>) :
+private class BiMapImpl<K, V> private constructor(delegate: Map<K, V>) :
         BiMap<K, V>, Map<K, V> by delegate {
     constructor(forward: Map<K, V>, backward: Map<V, K>) : this(forward) {
         _inverse = BiMapImpl(backward, this)
@@ -38,36 +38,40 @@ private class BiMapImpl<K, V> private constructor(private val delegate: Map<K, V
 
     override val values: Set<V> get() = inverse.keys
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is BiMap<*, *>) return false
-        if (other.size != size) return false
-        try {
-            val i = entries.iterator()
-            while (i.hasNext()) {
-                val e = i.next()
-                val key = e.key
-                val value = e.value
-                if (value == null) {
-                    if (other[key] != null || !other.containsKey(key))
-                        return false
-                } else {
-                    if (value != other[key])
-                        return false
-                }
-            }
-        } catch (_: ClassCastException) {
-            return false
-        } catch (_: NullPointerException) {
-            return false
-        }
-        return true
-    }
+    override fun equals(other: Any?): Boolean = equals(this, other)
 
-    override fun hashCode(): Int {
-        return entries.fold(0) { acc, entry ->
-            acc + entry.hashCode()
+    override fun hashCode(): Int = hashCodeOf(this)
+}
+
+internal fun equals(bimap: BiMap<*, *>, other: Any?): Boolean {
+    if (bimap === other) return true
+    if (other !is BiMap<*, *>) return false
+    if (other.size != bimap.size) return false
+    try {
+        val i = bimap.entries.iterator()
+        while (i.hasNext()) {
+            val e = i.next()
+            val key = e.key
+            val value = e.value
+            if (value == null) {
+                if (other[key] != null || !other.containsKey(key))
+                    return false
+            } else {
+                if (value != other[key])
+                    return false
+            }
         }
+    } catch (_: ClassCastException) {
+        return false
+    } catch (_: NullPointerException) {
+        return false
+    }
+    return true
+}
+
+internal fun hashCodeOf(map: Map<*, *>): Int {
+    return map.entries.fold(0) { acc, entry ->
+        acc + entry.hashCode()
     }
 }
 
@@ -82,9 +86,6 @@ fun <K, V> biMapOf(vararg pairs: Pair<K, V>): BiMap<K, V> =
         } else {
             emptyBiMap()
         }
-
-@Suppress("NOTHING_TO_INLINE")
-inline fun <K, V> biMapOf(): BiMap<K, V> = emptyBiMap()
 
 fun <K, V> biMapOf(pair: Pair<K, V>): BiMap<K, V> =
         BiMapImpl(mapOf(pair), mapOf(pair.second to pair.first))

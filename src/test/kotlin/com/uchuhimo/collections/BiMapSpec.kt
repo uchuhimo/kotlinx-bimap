@@ -23,6 +23,7 @@ import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import org.jetbrains.spek.subject.itBehavesLike
+import kotlin.test.assertTrue
 
 object BiMapSpec : SubjectSpek<BiMap<Int, String>>({
     subject { biMapOf(1 to "1", 2 to "2", 3 to "3") }
@@ -30,6 +31,18 @@ object BiMapSpec : SubjectSpek<BiMap<Int, String>>({
     itBehavesLike(MapSpec)
 
     given("""a bimap contains { 1 to "1", 2 to "2", 3 to "3" }""") {
+        it("should be equal to another bimap with same content") {
+            assertTrue(subject == biMapOf(1 to "1", 2 to "2", 3 to "3"))
+        }
+        it("should not be equal to another bimap with different content") {
+            assertTrue(subject != biMapOf(1 to "1", 2 to "2"))
+            assertTrue(subject != biMapOf(1 to "1", 2 to "2", 3 to "4"))
+            assertTrue(subject != biMapOf(1 to "1", 2 to "2", 3 to "3", 4 to "4"))
+        }
+        it("should have same hash code with another bimap with same content") {
+            assertThat(subject.hashCode(),
+                    equalTo(biMapOf(1 to "1", 2 to "2", 3 to "3").hashCode()))
+        }
         it("should contain all specified values") {
             assertThat(subject.values, equalTo(setOf("1", "2", "3")))
         }

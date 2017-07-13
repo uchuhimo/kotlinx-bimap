@@ -23,6 +23,7 @@ import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import org.jetbrains.spek.subject.itBehavesLike
+import kotlin.test.assertTrue
 
 object EmptyBiMapSpec : SubjectSpek<BiMap<Int, String>>({
     subject { emptyBiMap() }
@@ -30,6 +31,12 @@ object EmptyBiMapSpec : SubjectSpek<BiMap<Int, String>>({
     itBehavesLike(EmptyMapSpec)
 
     given("an empty bimap") {
+        it("should be equal to another empty bimap") {
+            assertTrue(subject == emptyBiMap<Int, String>())
+        }
+        it("should have same hash code with another empty bimap") {
+            assertThat(subject.hashCode(), equalTo(emptyBiMap<Int, String>().hashCode()))
+        }
         it("should contain no value") {
             assertThat(subject.values, equalTo(emptySet()))
         }

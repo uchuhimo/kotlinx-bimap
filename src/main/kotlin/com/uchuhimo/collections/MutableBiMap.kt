@@ -56,83 +56,6 @@ interface MutableBiMap<K, V> : MutableMap<K, V>, BiMap<K, V> {
     fun forcePut(key: K, value: V): V?
 }
 
-private class MutableBiMapImpl<K, V> private constructor(private val delegate: MutableMap<K, V>) :
-        MutableBiMap<K, V>, Map<K, V> by delegate {
-    constructor(forward: MutableMap<K, V>, backward: MutableMap<V, K>) : this(forward) {
-        _inverse = MutableBiMapImpl(backward, this)
-    }
-
-    private constructor(backward: MutableMap<K, V>, forward: MutableBiMapImpl<V, K>) : this(backward) {
-        _inverse = forward
-    }
-
-    private lateinit var _inverse: MutableBiMapImpl<V, K>
-
-    private val inverseDelegate = inverse.delegate
-
-    override val inverse: MutableBiMapImpl<V, K> get() = _inverse
-
-    override fun containsValue(value: V): Boolean = inverseDelegate.containsKey(value)
-
-    override val entries: MutableSet<MutableMap.MutableEntry<K, V>> =
-            object : MutableSet<MutableMap.MutableEntry<K, V>> by delegate.entries {
-                override fun clear() {
-                    this@MutableBiMapImpl.clear()
-                }
-
-                override fun iterator(): MutableIterator<MutableMap.MutableEntry<K, V>> =
-                        object : MutableIterator<MutableMap.MutableEntry<K, V>> {
-                            override fun remove() {
-                                TODO("not implemented")
-                            }
-
-                            override fun hasNext(): Boolean {
-                                TODO("not implemented")
-                            }
-
-                            override fun next(): MutableMap.MutableEntry<K, V> {
-                                TODO("not implemented")
-                            }
-                        }
-
-                override fun remove(element: MutableMap.MutableEntry<K, V>): Boolean {
-                    inverseDelegate.remove(element.value, element.key)
-                    return delegate.remove(element.key, element.value)
-                }
-            }
-
-    override val keys: MutableSet<K>
-        get() = TODO("not implemented")
-    override val values: MutableSet<V>
-        get() = TODO("not implemented")
-
-    override fun clear() {
-        delegate.clear()
-        inverseDelegate.clear()
-    }
-
-    override fun put(key: K, value: V): V? {
-        inverseDelegate.put(value, key)?.also { oldKey -> delegate.remove(oldKey) }
-        return delegate.put(key, value)?.also { oldValue -> inverseDelegate.remove(oldValue) }
-    }
-
-    override fun forcePut(key: K, value: V): V? {
-        TODO("not implemented")
-    }
-
-    override fun putAll(from: Map<out K, V>) {
-        from.forEach { key, value -> this[key] = value }
-    }
-
-    override fun remove(key: K): V? {
-        return delegate.remove(key).also { value ->
-            if (value != null) {
-                inverseDelegate.remove(value)
-            }
-        }
-    }
-}
-
 typealias GuavaBiMap<K, V> = com.google.common.collect.BiMap<K, V>
 
 class MutableBiMapWrapper<K, V>(internal val delegate: GuavaBiMap<K, V>) :
@@ -143,6 +66,10 @@ class MutableBiMapWrapper<K, V>(internal val delegate: GuavaBiMap<K, V>) :
 
     override fun forcePut(key: K, value: V): V? = delegate.forcePut(key, value)
 
+    override fun equals(other: Any?): Boolean = equals(this, other)
+
+    override fun hashCode(): Int = hashCodeOf(this)
+
     companion object {
         private class InverseWrapper<K, V>(private val wrapper: MutableBiMapWrapper<V, K>) :
                 MutableBiMap<K, V>, MutableMap<K, V> by wrapper.delegate.inverse() {
@@ -152,6 +79,10 @@ class MutableBiMapWrapper<K, V>(internal val delegate: GuavaBiMap<K, V>) :
 
             override fun forcePut(key: K, value: V): V? =
                     wrapper.delegate.inverse().forcePut(key, value)
+
+            override fun equals(other: Any?): Boolean = equals(this, other)
+
+            override fun hashCode(): Int = hashCodeOf(this)
         }
     }
 }
@@ -187,6 +118,34 @@ class GuavaBiMapWrapper<K, V>(internal val delegate: MutableBiMap<K, V>) :
     override fun inverse(): GuavaBiMap<V, K> = _inverse
 
     override fun clear() = delegate.clear()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is GuavaBiMap<*, *>) return false
+        if (other.size != size) return false
+        try {
+            val i = entries.iterator()
+            while (i.hasNext()) {
+                val e = i.next()
+                val key = e.key
+                val value = e.value
+                if (value == null) {
+                    if (other[key] != null || !other.containsKey(key))
+                        return false
+                } else {
+                    if (value != other[key])
+                        return false
+                }
+            }
+        } catch (_: ClassCastException) {
+            return false
+        } catch (_: NullPointerException) {
+            return false
+        }
+        return true
+    }
+
+    override fun hashCode(): Int = hashCodeOf(this)
 }
 
 fun <K, V> MutableBiMap<K, V>.asGuavaBiMap(): GuavaBiMap<K, V> =
@@ -202,9 +161,6 @@ fun <K, V> GuavaBiMap<K, V>.asMutableBiMap(): MutableBiMap<K, V> =
         } else {
             MutableBiMapWrapper(this)
         }
-
-@Suppress("NOTHING_TO_INLINE")
-inline fun <K, V> mutableBiMapOf(): MutableBiMap<K, V> = HashBiMap.create<K, V>().asMutableBiMap()
 
 fun <K, V> mutableBiMapOf(vararg pairs: Pair<K, V>): MutableBiMap<K, V>
         = HashBiMap.create<K, V>(pairs.size).asMutableBiMap().apply { putAll(pairs) }

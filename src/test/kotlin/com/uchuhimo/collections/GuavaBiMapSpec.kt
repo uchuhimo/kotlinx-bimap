@@ -26,16 +26,39 @@ import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import org.jetbrains.spek.subject.itBehavesLike
+import kotlin.test.assertTrue
 
-object MutableBiMapSpec : SubjectSpek<MutableBiMap<Int, String>>({
-    subject { mutableBiMapOf(1 to "1", 2 to "2", 3 to "3") }
+object GuavaBiMapSpec : SubjectSpek<GuavaBiMap<Int, String>>({
+    subject { HashBiMap.create(mapOf(1 to "1", 2 to "2", 3 to "3")) }
 
-    itBehavesLike(BiMapSpec)
+    itBehavesLike(MapSpec)
 
-    given("a mutable bimap") {
+    given("a guava bimap") {
+        it("should be equal to another guava bimap with same content") {
+            assertTrue(subject == HashBiMap.create(mapOf(1 to "1", 2 to "2", 3 to "3")))
+        }
+        it("should not be equal to another guava bimap with different content") {
+            assertTrue(subject != HashBiMap.create(mapOf(1 to "1", 2 to "2")))
+            assertTrue(subject != HashBiMap.create(mapOf(1 to "1", 2 to "2", 3 to "4")))
+            assertTrue(subject != HashBiMap.create(mapOf(1 to "1", 2 to "2", 3 to "3", 4 to "4")))
+        }
+        it("should have same hash code with another guava bimap with same content") {
+            assertThat(subject.hashCode(),
+                    equalTo(HashBiMap.create(mapOf(1 to "1", 2 to "2", 3 to "3")).hashCode()))
+        }
+        it("should contain all specified values") {
+            assertThat(subject.values, equalTo(setOf("1", "2", "3")))
+        }
+        on("inverse") {
+            it("should map from specified values to specified keys") {
+                val expected: GuavaBiMap<String, Int> =
+                        HashBiMap.create(mapOf("1" to 1, "2" to 2, "3" to 3))
+                assertThat(subject.inverse(), equalTo(expected))
+            }
+        }
         on("inverse twice") {
             it("should be same with itself") {
-                assertThat(subject.inverse.inverse, equalTo(subject))
+                assertThat(subject.inverse().inverse(), equalTo(subject))
             }
         }
         group("put operation") {
@@ -133,20 +156,20 @@ object MutableBiMapSpec : SubjectSpek<MutableBiMap<Int, String>>({
     }
 })
 
-object GuavaBiMapAsMutableBiMapSpec : SubjectSpek<MutableBiMap<Int, String>>({
-    subject { HashBiMap.create(mapOf(1 to "1", 2 to "2", 3 to "3")).asMutableBiMap() }
+object MutableBiMapAsGuavaBiMapSpec : SubjectSpek<GuavaBiMap<Int, String>>({
+    subject { mutableBiMapOf(1 to "1", 2 to "2", 3 to "3").asGuavaBiMap() }
 
-    itBehavesLike(MutableBiMapSpec)
+    itBehavesLike(GuavaBiMapSpec)
 })
 
-object MutableBiMapWrapperSpec : SubjectSpek<MutableBiMapWrapper<Int, String>>({
-    subject { MutableBiMapWrapper(HashBiMap.create(mapOf(1 to "1", 2 to "2", 3 to "3"))) }
+object GuavaBiMapWrapperSpec : SubjectSpek<GuavaBiMapWrapper<Int, String>>({
+    subject { GuavaBiMapWrapper(mutableBiMapOf(1 to "1", 2 to "2", 3 to "3")) }
 
-    itBehavesLike(MutableBiMapSpec)
+    itBehavesLike(GuavaBiMapSpec)
 })
 
-object InverseMutableBiMapSpec : SubjectSpek<MutableBiMap<Int, String>>({
-    subject { mutableBiMapOf("1" to 1, "2" to 2, "3" to 3).inverse }
+object InverseGuavaBiMapSpec : SubjectSpek<GuavaBiMap<Int, String>>({
+    subject { HashBiMap.create(mapOf("1" to 1, "2" to 2, "3" to 3)).inverse() }
 
-    itBehavesLike(MutableBiMapSpec)
+    itBehavesLike(GuavaBiMapSpec)
 })
