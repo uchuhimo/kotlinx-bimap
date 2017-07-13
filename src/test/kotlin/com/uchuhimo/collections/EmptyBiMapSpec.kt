@@ -24,27 +24,25 @@ import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import org.jetbrains.spek.subject.itBehavesLike
 
-object BiMapSpec : SubjectSpek<BiMap<Int, String>>({
-    subject { biMapOf(1 to "1", 2 to "2", 3 to "3") }
+object EmptyBiMapSpec : SubjectSpek<BiMap<Int, String>>({
+    subject { emptyBiMap() }
 
-    itBehavesLike(MapSpec)
+    itBehavesLike(EmptyMapSpec)
 
-    given("""a bimap contains { 1 to "1", 2 to "2", 3 to "3" }""") {
-        it("should contain all specified values") {
-            assertThat(subject.values, equalTo(setOf("1", "2", "3")))
+    given("an empty bimap") {
+        it("should contain no value") {
+            assertThat(subject.values, equalTo(emptySet()))
         }
         on("inverse") {
-            it("should map from specified values to specified keys") {
-                assertThat(subject.inverse, equalTo(biMapOf("1" to 1, "2" to 2, "3" to 3)))
+            it("should still be an empty bimap") {
+                assertThat(subject.inverse, equalTo(emptyBiMap()))
             }
         }
     }
+})
 
-    given("a bimap with one element") {
-        val biMap = biMapOf(1 to "1")
+object BiMapWithoutParameter : SubjectSpek<BiMap<Int, String>>({
+    subject { biMapOf() }
 
-        it("should contain specified key and value") {
-            assertThat(biMap, equalTo(biMapOf(1 to "1", 1 to "1")))
-        }
-    }
+    itBehavesLike(EmptyBiMapSpec)
 })

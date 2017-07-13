@@ -20,31 +20,27 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
-import org.jetbrains.spek.subject.itBehavesLike
+import kotlin.test.assertTrue
 
-object BiMapSpec : SubjectSpek<BiMap<Int, String>>({
-    subject { biMapOf(1 to "1", 2 to "2", 3 to "3") }
+object EmptyMapSpec : SubjectSpek<Map<Int, String>>({
+    subject { emptyMap() }
 
-    itBehavesLike(MapSpec)
-
-    given("""a bimap contains { 1 to "1", 2 to "2", 3 to "3" }""") {
-        it("should contain all specified values") {
-            assertThat(subject.values, equalTo(setOf("1", "2", "3")))
+    given("an empty map") {
+        it("should have size equal to 0") {
+            assertThat(subject.size, equalTo(0))
         }
-        on("inverse") {
-            it("should map from specified values to specified keys") {
-                assertThat(subject.inverse, equalTo(biMapOf("1" to 1, "2" to 2, "3" to 3)))
-            }
+        it("should be empty") {
+            assertTrue(subject.isEmpty())
         }
-    }
-
-    given("a bimap with one element") {
-        val biMap = biMapOf(1 to "1")
-
-        it("should contain specified key and value") {
-            assertThat(biMap, equalTo(biMapOf(1 to "1", 1 to "1")))
+        it("should contain no key") {
+            assertThat(subject.keys, equalTo(emptySet()))
+        }
+        it("should contain no value") {
+            assertThat(subject.values.toList(), equalTo(listOf()))
+        }
+        it("should contain no entry") {
+            assertThat(subject.entries, equalTo(emptySet()))
         }
     }
 })

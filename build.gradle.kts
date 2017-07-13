@@ -96,12 +96,13 @@ configure<DependencyManagementExtension> {
         dependencySet("org.jetbrains.kotlin:1.1.3-2") {
             entry("kotlin-stdlib")
             entry("kotlin-reflect")
-            entry("kotlin-test")
         }
     }
 
     manage(configurations.testImplementation) {
         dependencies {
+            dependency("org.jetbrains.kotlin:kotlin-test:1.1.3-2")
+
             dependency("com.natpryce:hamkrest:1.4.1.0")
             dependency("org.hamcrest:hamcrest-all:1.3")
 
