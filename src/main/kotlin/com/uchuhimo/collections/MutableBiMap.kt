@@ -123,24 +123,18 @@ class GuavaBiMapWrapper<K, V>(internal val delegate: MutableBiMap<K, V>) :
         if (this === other) return true
         if (other !is GuavaBiMap<*, *>) return false
         if (other.size != size) return false
-        try {
-            val i = entries.iterator()
-            while (i.hasNext()) {
-                val e = i.next()
-                val key = e.key
-                val value = e.value
-                if (value == null) {
-                    if (other[key] != null || !other.containsKey(key))
-                        return false
-                } else {
-                    if (value != other[key])
-                        return false
-                }
+        val i = entries.iterator()
+        while (i.hasNext()) {
+            val e = i.next()
+            val key = e.key
+            val value = e.value
+            if (value == null) {
+                if (other[key] != null || !other.containsKey(key))
+                    return false
+            } else {
+                if (value != other[key])
+                    return false
             }
-        } catch (_: ClassCastException) {
-            return false
-        } catch (_: NullPointerException) {
-            return false
         }
         return true
     }

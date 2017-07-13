@@ -47,24 +47,18 @@ internal fun equals(bimap: BiMap<*, *>, other: Any?): Boolean {
     if (bimap === other) return true
     if (other !is BiMap<*, *>) return false
     if (other.size != bimap.size) return false
-    try {
-        val i = bimap.entries.iterator()
-        while (i.hasNext()) {
-            val e = i.next()
-            val key = e.key
-            val value = e.value
-            if (value == null) {
-                if (other[key] != null || !other.containsKey(key))
-                    return false
-            } else {
-                if (value != other[key])
-                    return false
-            }
+    val i = bimap.entries.iterator()
+    while (i.hasNext()) {
+        val e = i.next()
+        val key = e.key
+        val value = e.value
+        if (value == null) {
+            if (other[key] != null || !other.containsKey(key))
+                return false
+        } else {
+            if (value != other[key])
+                return false
         }
-    } catch (_: ClassCastException) {
-        return false
-    } catch (_: NullPointerException) {
-        return false
     }
     return true
 }
