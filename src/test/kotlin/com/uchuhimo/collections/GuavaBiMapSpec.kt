@@ -27,6 +27,7 @@ import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import org.jetbrains.spek.subject.itBehavesLike
 import kotlin.test.assertTrue
+import com.google.common.collect.BiMap as GuavaBiMap
 
 object GuavaBiMapSpec : SubjectSpek<GuavaBiMap<Int, String>>({
     subject { HashBiMap.create(mapOf(1 to "1", 2 to "2", 3 to "3")) }
