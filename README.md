@@ -29,7 +29,7 @@ Add dependencies:
 <dependency>
   <groupId>com.uchuhimo</groupId>
   <artifactId>kotlinx-bimap</artifactId>
-  <version>0.3.1</version>
+  <version>0.4</version>
   <type>pom</type>
 </dependency>
 ```
@@ -47,7 +47,7 @@ repositories {
 Add dependencies:
 
 ```groovy
-compile 'com.uchuhimo:kotlinx-bimap:0.3.1'
+compile 'com.uchuhimo:kotlinx-bimap:0.4'
 ```
 
 ## Building from source
