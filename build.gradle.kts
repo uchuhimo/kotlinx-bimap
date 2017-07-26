@@ -91,7 +91,8 @@ fun FiltersExtension.engines(setup: EnginesExtension.() -> Unit) {
 
 configure<DependencyManagementExtension> {
     dependencies {
-        dependency("com.google.guava:guava:22.0")
+        // 20.0 is the last release that supports JDK 1.6
+        dependency("com.google.guava:guava:20.0")
 
         dependencySet("org.jetbrains.kotlin:1.1.3-2") {
             entry("kotlin-stdlib")
@@ -139,22 +140,21 @@ dependencies {
     testRuntimeOnly("org.jetbrains.spek:spek-junit-platform-engine")
 }
 
-if (System.getenv().containsKey("JDK6_HOME")) {
-    val Jdk6Home = System.getenv()["JDK6_HOME"]
+if (System.getenv().containsKey("JDK7_HOME")) {
+    val Jdk7Home = System.getenv()["JDK7_HOME"]
     tasks.withType(JavaCompile::class.java) {
-        println("$name: use JDK6 to compile")
+        println("$name: use JDK7 to compile")
         options.apply {
             isFork = true
-            bootClasspath = "$Jdk6Home/jre/lib/rt.jar"
+            bootClasspath = "$Jdk7Home/jre/lib/rt.jar"
             forkOptions.apply {
-                javaHome = File("$Jdk6Home/jre")
-                executable = "$Jdk6Home/bin/javac"
+                javaHome = File("$Jdk7Home/jre")
+                executable = "$Jdk7Home/bin/javac"
             }
         }
     }
     tasks.withType(KotlinCompile::class.java) {
-        println("$name: use JDK6 to compile")
-        println("JDK8_HOME: ${System.getenv()["JAVA_HOME"]}")
+        println("$name: use JDK7 to compile")
         kotlinOptions.jdkHome = System.getenv()["JAVA_HOME"]
     }
 }

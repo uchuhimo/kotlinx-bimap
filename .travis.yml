@@ -5,11 +5,8 @@ jdk:
 
 before_install:
   - jdk_switcher use openjdk7
-  - export JDK6_HOME=$JAVA_HOME
+  - export JDK7_HOME=$JAVA_HOME
   - jdk_switcher use oraclejdk8
-
-install:
-  - ./gradlew assemble --stacktrace --info
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
