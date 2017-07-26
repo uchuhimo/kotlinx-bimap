@@ -26,7 +26,6 @@ private class BiMapImpl<K, V> private constructor(delegate: Map<K, V>) :
     }
 
     private constructor(backward: Map<K, V>, forward: BiMap<V, K>) : this(backward) {
-        listOf(1, 2, 3).stream()
         _inverse = forward
     }
 
