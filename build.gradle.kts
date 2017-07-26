@@ -151,7 +151,7 @@ if (System.getenv().containsKey("JDK6_HOME")) {
     }
     tasks.withType(KotlinCompile::class.java) {
         println("$name: use JDK6 to compile")
-        kotlinOptions.jdkHome = Jdk6Home
+        kotlinOptions.jdkHome = "$Jdk6Home/jre"
     }
 }
 
