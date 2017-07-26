@@ -4,7 +4,7 @@ jdk:
   - oraclejdk8
 
 before_install:
-  - jdk_switcher use openjdk6
+  - jdk_switcher use oraclejdk7
   - export JDK6_HOME=$JAVA_HOME
   - jdk_switcher use oraclejdk8
 
