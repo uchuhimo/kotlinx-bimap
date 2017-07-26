@@ -6,7 +6,6 @@ jdk:
 before_install:
   - jdk_switcher use openjdk6
   - export JDK6_HOME=$JAVA_HOME
-  - echo $JDK6_HOME
   - jdk_switcher use oraclejdk8
 
 after_success:

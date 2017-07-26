@@ -146,6 +146,7 @@ tasks.withType(JavaCompile::class.java) {
             println("use JDK6 to compile")
             isFork = true
             bootClasspath = "${System.getenv()["JDK6_HOME"]}/jre/lib/rt.jar"
+            forkOptions.javaHome = File(System.getenv()["JDK6_HOME"])
         }
     }
 }
