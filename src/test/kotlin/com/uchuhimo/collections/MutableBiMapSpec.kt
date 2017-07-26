@@ -133,6 +133,12 @@ object MutableBiMapSpec : SubjectSpek<MutableBiMap<Int, String>>({
     }
 })
 
+object ToMutableBiMapSpec : SubjectSpek<MutableBiMap<Int, String>>({
+    subject { mapOf(1 to "1", 2 to "2", 3 to "3").toMutableBiMap() }
+
+    itBehavesLike(MutableBiMapSpec)
+})
+
 object GuavaBiMapAsMutableBiMapSpec : SubjectSpek<MutableBiMap<Int, String>>({
     subject { HashBiMap.create(mapOf(1 to "1", 2 to "2", 3 to "3")).asMutableBiMap() }
 

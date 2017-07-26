@@ -70,13 +70,15 @@ private val emptyBiMap = BiMapImpl<Any?, Any?>(emptyMap(), emptyMap())
 
 fun <K, V> emptyBiMap(): BiMap<K, V> = @Suppress("UNCHECKED_CAST") (emptyBiMap as BiMap<K, V>)
 
-fun <K, V> biMapOf(vararg pairs: Pair<K, V>): BiMap<K, V> =
-        if (pairs.isNotEmpty()) {
-            val inversePairs = Array(pairs.size, { i -> pairs[i].second to pairs[i].first })
-            BiMapImpl(mapOf(*pairs), mapOf(*inversePairs))
+fun <K, V> Map<K, V>.toBiMap(): BiMap<K, V> =
+        if (isNotEmpty()) {
+            val inversePairs = entries.map { (key, value) -> value to key }.toMap()
+            BiMapImpl(this, inversePairs)
         } else {
             emptyBiMap()
         }
+
+fun <K, V> biMapOf(vararg pairs: Pair<K, V>): BiMap<K, V> = pairs.toMap().toBiMap()
 
 fun <K, V> biMapOf(pair: Pair<K, V>): BiMap<K, V> =
         BiMapImpl(mapOf(pair), mapOf(pair.second to pair.first))

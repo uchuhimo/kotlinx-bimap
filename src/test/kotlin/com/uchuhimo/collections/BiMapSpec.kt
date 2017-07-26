@@ -61,3 +61,9 @@ object BiMapSpec : SubjectSpek<BiMap<Int, String>>({
         }
     }
 })
+
+object ToBiMapSpec : SubjectSpek<BiMap<Int, String>>({
+    subject { mapOf(1 to "1", 2 to "2", 3 to "3").toBiMap() }
+
+    itBehavesLike(BiMapSpec)
+})

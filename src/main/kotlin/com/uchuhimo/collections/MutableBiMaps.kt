@@ -122,3 +122,6 @@ fun <K, V> GuavaBiMap<K, V>.asMutableBiMap(): MutableBiMap<K, V> =
 
 fun <K, V> mutableBiMapOf(vararg pairs: Pair<K, V>): MutableBiMap<K, V>
         = HashBiMap.create<K, V>(pairs.size).asMutableBiMap().apply { putAll(pairs) }
+
+fun <K, V> Map<K, V>.toMutableBiMap(): MutableBiMap<K, V>
+        = HashBiMap.create<K, V>(size).asMutableBiMap().apply { putAll(this@toMutableBiMap) }
