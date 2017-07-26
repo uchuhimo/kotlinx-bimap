@@ -3,7 +3,7 @@ language: java
 jdk:
   - oraclejdk8
 
-before_script:
+before_install:
   - jdk_switcher use openjdk6
   - export JDK6_HOME=$JAVA_HOME
   - echo $JDK6_HOME
