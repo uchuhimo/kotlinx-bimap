@@ -4,12 +4,9 @@ jdk:
   - oraclejdk8
 
 before_install:
-  - jdk_switcher use oraclejdk7
+  - jdk_switcher use openjdk7
   - export JDK6_HOME=$JAVA_HOME
   - jdk_switcher use oraclejdk8
-  - ls /usr/lib/jvm
-  - ls /usr/lib/jvm/java-7-oracle
-  - ls /usr/lib/jvm/java-7-oracle/jre
 
 install:
   - ./gradlew assemble --stacktrace --info
