@@ -7,6 +7,7 @@ before_install:
   - jdk_switcher use oraclejdk7
   - export JDK6_HOME=$JAVA_HOME
   - jdk_switcher use oraclejdk8
+  - ls /usr/lib/jvm
   - ls /usr/lib/jvm/java-7-oracle
   - ls /usr/lib/jvm/java-7-oracle/jre
 
