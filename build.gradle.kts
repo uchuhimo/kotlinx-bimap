@@ -146,13 +146,16 @@ if (System.getenv().containsKey("JDK6_HOME")) {
         options.apply {
             isFork = true
             bootClasspath = "$Jdk6Home/jre/lib/rt.jar"
-            forkOptions.javaHome = File("$Jdk6Home/jre")
+            forkOptions.apply {
+                javaHome = File("$Jdk6Home/jre")
+                executable = "$Jdk6Home/bin/javac"
+            }
         }
     }
     tasks.withType(KotlinCompile::class.java) {
         println("$name: use JDK6 to compile")
-        println("kotlinOptions.jdkHome: ${kotlinOptions.jdkHome}")
-        kotlinOptions.jdkHome = "$Jdk6Home/jre"
+        println("JDK8_HOME: ${System.getenv()["JAVA_HOME"]}")
+        kotlinOptions.jdkHome = System.getenv()["JAVA_HOME"]
     }
 }
 
