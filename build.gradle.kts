@@ -140,7 +140,14 @@ dependencies {
 }
 
 tasks.withType(JavaCompile::class.java) {
-    options.encoding = "UTF-8"
+    options.apply {
+        encoding = "UTF-8"
+        if (System.getenv().containsKey("JDK6_HOME")) {
+            println("use JDK6 to compile")
+            isFork = true
+            bootClasspath = "${System.getenv()["JDK6_HOME"]}/jre/lib/rt.jar"
+        }
+    }
 }
 
 tasks.withType(Test::class.java) {
