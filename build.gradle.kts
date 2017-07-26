@@ -146,7 +146,7 @@ if (System.getenv().containsKey("JDK6_HOME")) {
         options.apply {
             isFork = true
             bootClasspath = "$Jdk6Home/jre/lib/rt.jar"
-            forkOptions.javaHome = File(Jdk6Home)
+            forkOptions.javaHome = File("$Jdk6Home/jre")
         }
     }
     tasks.withType(KotlinCompile::class.java) {
