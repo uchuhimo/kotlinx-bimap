@@ -7,10 +7,9 @@ before_install:
   - jdk_switcher use openjdk6
   - export JDK6_HOME=$JAVA_HOME
   - jdk_switcher use oraclejdk8
-  - ls /usr/lib/jvm
-  - ls /usr/lib/jvm/java-6-openjdk-amd64/bin/java
-  - ls /usr/lib/jvm/java-6-openjdk-amd64/bin
   - ls /usr/lib/jvm/java-6-openjdk-amd64
+  - ls /usr/lib/jvm/java-6-openjdk-amd64/bin
+  - tree /usr/lib/jvm/java-6-openjdk-amd64
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
