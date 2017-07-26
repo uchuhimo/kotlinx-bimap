@@ -139,16 +139,24 @@ dependencies {
     testRuntimeOnly("org.jetbrains.spek:spek-junit-platform-engine")
 }
 
-tasks.withType(JavaCompile::class.java) {
-    options.apply {
-        encoding = "UTF-8"
-        if (System.getenv().containsKey("JDK6_HOME")) {
-            println("${this@withType.name}: use JDK6 to compile")
+if (System.getenv().containsKey("JDK6_HOME")) {
+    val Jdk6Home = System.getenv()["JDK6_HOME"]
+    tasks.withType(JavaCompile::class.java) {
+        println("$name: use JDK6 to compile")
+        options.apply {
             isFork = true
-            bootClasspath = "${System.getenv()["JDK6_HOME"]}/jre/lib/rt.jar"
-            forkOptions.javaHome = File(System.getenv()["JDK6_HOME"])
+            bootClasspath = "$Jdk6Home/jre/lib/rt.jar"
+            forkOptions.javaHome = File(Jdk6Home)
         }
     }
+    tasks.withType(KotlinCompile::class.java) {
+        println("$name: use JDK6 to compile")
+        kotlinOptions.jdkHome = Jdk6Home
+    }
+}
+
+tasks.withType(JavaCompile::class.java) {
+    options.encoding = "UTF-8"
 }
 
 tasks.withType(Test::class.java) {
