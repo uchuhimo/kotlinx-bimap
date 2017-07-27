@@ -19,6 +19,53 @@
 
 package com.uchuhimo.collections
 
+/**
+ * Returns an empty read-only bimap of specified type.
+ *
+ * @return an empty read-only bimap
+ */
+fun <K, V> emptyBiMap(): BiMap<K, V> = @Suppress("UNCHECKED_CAST") (emptyBiMap as BiMap<K, V>)
+
+/**
+ * Returns a new read-only bimap containing all key-value pairs from the given map.
+ *
+ * The returned bimap preserves the entry iteration order of the original map.
+ *
+ * @receiver the original map
+ * @return a new read-only bimap
+ */
+fun <K, V> Map<K, V>.toBiMap(): BiMap<K, V> =
+        if (isNotEmpty()) {
+            val inversePairs = entries.map { (key, value) -> value to key }.toMap()
+            BiMapImpl(this, inversePairs)
+        } else {
+            emptyBiMap()
+        }
+
+/**
+ * Returns a new read-only bimap with the specified contents, given as a list of pairs
+ * where the first value is the key and the second is the value.
+ *
+ * If multiple pairs have the same key or the same value, the resulting bimap will contain
+ * the last of those pairs.
+ *
+ * Entries of the bimap are iterated in the order they were specified.
+ *
+ * @param pairs the specified contents for the returned bimap
+ * @return a new read-only bimap
+ */
+fun <K, V> biMapOf(vararg pairs: Pair<K, V>): BiMap<K, V> = pairs.toMap().toBiMap()
+
+/**
+ * Returns a new read-only bimap, mapping only the specified key to the
+ * specified value.
+ *
+ * @param pair a pair of key and value for the returned bimap
+ * @return a new read-only bimap
+ */
+fun <K, V> biMapOf(pair: Pair<K, V>): BiMap<K, V> =
+        BiMapImpl(mapOf(pair), mapOf(pair.second to pair.first))
+
 private class BiMapImpl<K, V> private constructor(delegate: Map<K, V>) :
         BiMap<K, V>, Map<K, V> by delegate {
     constructor(forward: Map<K, V>, backward: Map<V, K>) : this(forward) {
@@ -67,18 +114,3 @@ internal fun hashCodeOf(map: Map<*, *>): Int {
 }
 
 private val emptyBiMap = BiMapImpl<Any?, Any?>(emptyMap(), emptyMap())
-
-fun <K, V> emptyBiMap(): BiMap<K, V> = @Suppress("UNCHECKED_CAST") (emptyBiMap as BiMap<K, V>)
-
-fun <K, V> Map<K, V>.toBiMap(): BiMap<K, V> =
-        if (isNotEmpty()) {
-            val inversePairs = entries.map { (key, value) -> value to key }.toMap()
-            BiMapImpl(this, inversePairs)
-        } else {
-            emptyBiMap()
-        }
-
-fun <K, V> biMapOf(vararg pairs: Pair<K, V>): BiMap<K, V> = pairs.toMap().toBiMap()
-
-fun <K, V> biMapOf(pair: Pair<K, V>): BiMap<K, V> =
-        BiMapImpl(mapOf(pair), mapOf(pair.second to pair.first))

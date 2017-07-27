@@ -145,7 +145,7 @@ object GuavaBiMapAsMutableBiMapSpec : SubjectSpek<MutableBiMap<Int, String>>({
     itBehavesLike(MutableBiMapSpec)
 })
 
-object MutableBiMapWrapperSpec : SubjectSpek<MutableBiMapWrapper<Int, String>>({
+internal object MutableBiMapWrapperSpec : SubjectSpek<MutableBiMapWrapper<Int, String>>({
     subject { MutableBiMapWrapper(HashBiMap.create(mapOf(1 to "1", 2 to "2", 3 to "3"))) }
 
     itBehavesLike(MutableBiMapSpec)

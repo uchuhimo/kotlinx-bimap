@@ -16,6 +16,12 @@
 
 package com.uchuhimo.collections
 
+/**
+ * A modifiable bimap. see [BiMap] to find read-only access methods.
+ *
+ * @param K the type of map keys.
+ * @param V the type of map values.
+ */
 interface MutableBiMap<K, V> : MutableMap<K, V>, BiMap<K, V> {
     override val inverse: MutableBiMap<V, K>
 
@@ -28,6 +34,8 @@ interface MutableBiMap<K, V> : MutableMap<K, V>, BiMap<K, V> {
      * bound to a different key in it. The bimap will remain unmodified in this
      * event. To avoid this exception, call [forcePut] instead.
      *
+     * @param key the key with which the specified value is to be associated.
+     * @param value the value to be associated with the specified key.
      * @return the previous value associated with the key, or `null` if the key
      *         was not present in the bimap.
      */
@@ -43,7 +51,7 @@ interface MutableBiMap<K, V> : MutableMap<K, V>, BiMap<K, V> {
      * Note that a successful call to this method could cause the size of the
      * bimap to increase by one, stay the same, or even decrease by one.
      *
-     * **Warning**: If an existing entry with this value is removed, the key
+     * __Warning__: If an existing entry with this value is removed, the key
      * for that entry is discarded and not returned.
      *
      * @param key the key with which the specified value is to be associated.

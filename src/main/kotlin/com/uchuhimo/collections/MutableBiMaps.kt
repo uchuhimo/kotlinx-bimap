@@ -22,7 +22,63 @@ package com.uchuhimo.collections
 import com.google.common.collect.HashBiMap
 import com.google.common.collect.BiMap as GuavaBiMap
 
-class MutableBiMapWrapper<K, V>(internal val delegate: GuavaBiMap<K, V>) :
+/**
+ * Views a mutable bimap as a Guava bimap. The original bimap shares same contents
+ * with the returned Guava bimap, so changes to the original bimap are reflected
+ * in the returned Guava bimap, and vice-versa.
+ *
+ * @receiver a mutable bimap
+ * @return a Guava bimap
+ */
+fun <K, V> MutableBiMap<K, V>.asGuavaBiMap(): GuavaBiMap<K, V> =
+        if (this is MutableBiMapWrapper) {
+            delegate
+        } else {
+            GuavaBiMapWrapper(this)
+        }
+
+/**
+ * Views a Guava bimap as a mutable bimap. The original Guava bimap shares same
+ * contents with the returned bimap, so changes to the original Guava bimap are
+ * reflected in the returned bimap, and vice-versa.
+ *
+ * @receiver a Guava bimap
+ * @return a mutable bimap
+ */
+fun <K, V> GuavaBiMap<K, V>.asMutableBiMap(): MutableBiMap<K, V> =
+        if (this is GuavaBiMapWrapper) {
+            delegate
+        } else {
+            MutableBiMapWrapper(this)
+        }
+
+/**
+ * Returns a new mutable bimap with the specified contents, given as a list of pairs
+ * where the first value is the key and the second is the value.
+ *
+ * If multiple pairs have the same key or the same value, the resulting bimap will contain
+ * the last of those pairs.
+ *
+ * Entries of the bimap are iterated in the order they were specified.
+ *
+ * @param pairs the specified contents for the returned bimap
+ * @return a new mutable bimap
+ */
+fun <K, V> mutableBiMapOf(vararg pairs: Pair<K, V>): MutableBiMap<K, V>
+        = HashBiMap.create<K, V>(pairs.size).asMutableBiMap().apply { putAll(pairs) }
+
+/**
+ * Returns a new mutable bimap containing all key-value pairs from the given map.
+ *
+ * The returned bimap preserves the entry iteration order of the original map.
+ *
+ * @receiver the original map
+ * @return a new mutable bimap
+ */
+fun <K, V> Map<K, V>.toMutableBiMap(): MutableBiMap<K, V>
+        = HashBiMap.create<K, V>(size).asMutableBiMap().apply { putAll(this@toMutableBiMap) }
+
+internal class MutableBiMapWrapper<K, V>(internal val delegate: GuavaBiMap<K, V>) :
         MutableBiMap<K, V>, MutableMap<K, V> by delegate {
     override val inverse: MutableBiMap<V, K> = InverseWrapper(this)
 
@@ -51,7 +107,7 @@ class MutableBiMapWrapper<K, V>(internal val delegate: GuavaBiMap<K, V>) :
     }
 }
 
-class GuavaBiMapWrapper<K, V>(internal val delegate: MutableBiMap<K, V>) :
+internal class GuavaBiMapWrapper<K, V>(internal val delegate: MutableBiMap<K, V>) :
         GuavaBiMap<K, V> {
     override fun putAll(from: Map<out K, V>) = delegate.putAll(from)
 
@@ -105,23 +161,3 @@ class GuavaBiMapWrapper<K, V>(internal val delegate: MutableBiMap<K, V>) :
 
     override fun hashCode(): Int = hashCodeOf(this)
 }
-
-fun <K, V> MutableBiMap<K, V>.asGuavaBiMap(): GuavaBiMap<K, V> =
-        if (this is MutableBiMapWrapper) {
-            delegate
-        } else {
-            GuavaBiMapWrapper(this)
-        }
-
-fun <K, V> GuavaBiMap<K, V>.asMutableBiMap(): MutableBiMap<K, V> =
-        if (this is GuavaBiMapWrapper) {
-            delegate
-        } else {
-            MutableBiMapWrapper(this)
-        }
-
-fun <K, V> mutableBiMapOf(vararg pairs: Pair<K, V>): MutableBiMap<K, V>
-        = HashBiMap.create<K, V>(pairs.size).asMutableBiMap().apply { putAll(pairs) }
-
-fun <K, V> Map<K, V>.toMutableBiMap(): MutableBiMap<K, V>
-        = HashBiMap.create<K, V>(size).asMutableBiMap().apply { putAll(this@toMutableBiMap) }

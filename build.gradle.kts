@@ -1,13 +1,17 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
 import java.util.Properties
+import java.net.URL
 import org.junit.platform.gradle.plugin.FiltersExtension
 import org.junit.platform.gradle.plugin.EnginesExtension
 import org.junit.platform.gradle.plugin.JUnitPlatformExtension
 import com.novoda.gradle.release.PublishExtension
+import groovy.lang.Closure
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementConfigurer
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import io.spring.gradle.dependencymanagement.internal.dsl.StandardDependencyManagementExtension
+import org.jetbrains.dokka.DokkaConfiguration
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.LinkMapping
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -211,8 +215,24 @@ tasks {
     "dokka"(DokkaTask::class) {
         outputFormat = "html"
         outputDirectory = "javadoc"(Javadoc::class).destinationDir.path
+        jdkVersion = 6
+        linkMapping(delegateAnyClosureOf<LinkMapping> {
+            dir = project.rootDir.toPath().resolve("src/main/kotlin").toFile().path
+            url = "https://github.com/uchuhimo/kotlinx-bimap/blob/v${project.version}/src/main/kotlin"
+            suffix = "#L"
+        })
+        externalDocumentationLink(
+                delegateAnyClosureOf<DokkaConfiguration.ExternalDocumentationLink.Builder> {
+                    url = URL("https://google.github.io/guava/releases/20.0/api/docs/")
+                })
     }
 }
+
+fun <T> Any.delegateAnyClosureOf(action: T.() -> Unit) =
+        object : Closure<Any?>(this, this) {
+            @Suppress("UNCHECKED_CAST")
+            fun doCall() = (delegate as T).action()
+        }
 
 configure<PublishExtension> {
     userOrg = "uchuhimo"
