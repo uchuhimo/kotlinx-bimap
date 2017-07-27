@@ -14,7 +14,7 @@ A bimap (bidirectional map) implementation for Kotlin.
 
 ## Interfaces and implementations
 
-This library provides interfaces for mutable/immutable bimap:
+This library provides interfaces for read-only/mutable bimap:
 
 | Interface | Bases | Implementations |
 | - | - | - |
@@ -28,62 +28,62 @@ This library provides interfaces for mutable/immutable bimap:
 - Create an empty read-only bimap:
 
   ```kotlin
-val newBiMap = emptyBiMap()
-```
+  val newBiMap = emptyBiMap()
+  ```
 
 - Create a new read-only bimap from pairs:
 
   ```kotlin
-val newBiMap = biMapOf(1 to "1", 2 to "2", 3 to "3")
-```
+  val newBiMap = biMapOf(1 to "1", 2 to "2", 3 to "3")
+  ```
 
 - Create a new read-only bimap from map:
 
   ```kotlin
-val newBiMap = mapOf(1 to "1", 2 to "2", 3 to "3").toBiMap()
-```
+  val newBiMap = mapOf(1 to "1", 2 to "2", 3 to "3").toBiMap()
+  ```
 
 ### Create mutable bimap
 
 - Create an empty mutable bimap:
 
   ```kotlin
-val newBiMap = mutableBiMapOf()
-```
+  val newBiMap = mutableBiMapOf()
+  ```
 
 - Create a new mutable bimap from pairs:
 
   ```kotlin
-val newBiMap = mutableBiMapOf(1 to "1", 2 to "2", 3 to "3")
-```
+  val newBiMap = mutableBiMapOf(1 to "1", 2 to "2", 3 to "3")
+  ```
 
 - Create a new mutable bimap from map:
 
   ```kotlin
-val newBiMap = mapOf(1 to "1", 2 to "2", 3 to "3").toMutableBiMap()
-```
+  val newBiMap = mapOf(1 to "1", 2 to "2", 3 to "3").toMutableBiMap()
+  ```
 
 ### Query bimap
 
 - Bimap support all operations of map:
 
   ```kotlin
-val biMap = biMapOf(1 to "1", 2 to "2", 3 to "3")
-biMap.size // 3
-biMap.isEmpty() // false
-biMap.values // ["1", "2", "3"]
-biMap[1] // "1"
-biMap.containsKey(4) // false
-biMap.getOrDefault(4, "4") // "4"
-```
+  val biMap = biMapOf(1 to "1", 2 to "2", 3 to "3")
+  biMap.size // 3
+  biMap.isEmpty() // false
+  biMap.values // ["1", "2", "3"]
+  biMap[1] // "1"
+  biMap.containsKey(4) // false
+  biMap.getOrDefault(4, "4") // "4"
+  ```
 
 - Get the inverse view of bimap:
 
   ```kotlin
-val biMap = biMapOf(1 to "1", 2 to "2", 3 to "3")
-val inverseBiMap = biMap.inverse
-inverseBiMap.values // [1, 2, 3]
-```
+  val biMap = biMapOf(1 to "1", 2 to "2", 3 to "3")
+  val inverseBiMap = biMap.inverse
+  inverseBiMap.values // [1, 2, 3]
+  ```
 
 ### Mutate mutable bimap
 
@@ -109,16 +109,16 @@ The `forcePut` operation will silently remove any existing entry with the value 
 - Views a mutable bimap as a Guava bimap:
 
   ```kotlin
-val mutableBiMap = mutableBiMapOf(1 to "1", 2 to "2", 3 to "3")
-val guavaBiMap = mutableBiMap.asGuavaBiMap()
-```
+  val mutableBiMap = mutableBiMapOf(1 to "1", 2 to "2", 3 to "3")
+  val guavaBiMap = mutableBiMap.asGuavaBiMap()
+  ```
 
 - Views a Guava bimap as a mutable bimap:
 
   ```kotlin
-val guavaBiMap = HashBiMap.create(mapOf(1 to "1", 2 to "2", 3 to "3"))
-val mutableBiMap = guavaBiMap.asMutableBiMap()
-```
+  val guavaBiMap = HashBiMap.create(mapOf(1 to "1", 2 to "2", 3 to "3"))
+  val mutableBiMap = guavaBiMap.asMutableBiMap()
+  ```
 
 ## Using in your projects
 

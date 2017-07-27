@@ -240,7 +240,7 @@ configure<PublishExtension> {
     artifactId = rootProject.name
     publishVersion = project.version as String
     setLicences("Apache-2.0")
-    desc = "a BiMap (bidirectional map) implementation for Kotlin"
+    desc = "a bimap (bidirectional map) implementation for Kotlin"
     website = "https://github.com/uchuhimo/kotlinx-bimap"
     bintrayUser = bintrayUserProperty
     bintrayKey = bintrayKeyProperty
