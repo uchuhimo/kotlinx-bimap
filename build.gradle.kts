@@ -159,7 +159,7 @@ if (System.getenv().containsKey("JDK7_HOME")) {
     }
     tasks.withType(KotlinCompile::class.java) {
         println("$name: use JDK7 to compile")
-        kotlinOptions.jdkHome = System.getenv()["JAVA_HOME"]
+        kotlinOptions.jdkHome = System.getenv()["JDK7_HOME"]
     }
 }
 
