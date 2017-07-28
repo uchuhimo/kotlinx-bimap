@@ -36,6 +36,7 @@ fun <K, V> emptyBiMap(): BiMap<K, V> = @Suppress("UNCHECKED_CAST") (emptyBiMap a
  */
 fun <K, V> Map<K, V>.toBiMap(): BiMap<K, V> =
         if (isNotEmpty()) {
+            listOf(1).stream()
             val inversePairs = entries.map { (key, value) -> value to key }.toMap()
             BiMapImpl(this, inversePairs)
         } else {
