@@ -55,9 +55,6 @@ object MapSpec : SubjectSpek<Map<Int, String>>({
             it("should return the corresponding value using `get`") {
                 assertThat(subject[key], equalTo(value))
             }
-            it("should return the corresponding value using `get`") {
-                assertThat(subject.getOrDefault(key, "4"), equalTo(value))
-            }
         }
         on("get with a non-existed key") {
             val key = 4
@@ -66,9 +63,6 @@ object MapSpec : SubjectSpek<Map<Int, String>>({
             }
             it("should return null using `get`") {
                 assertNull(subject[key])
-            }
-            it("should return the default value using `get`") {
-                assertThat(subject.getOrDefault(key, "4"), equalTo("4"))
             }
         }
     }

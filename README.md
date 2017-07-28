@@ -74,7 +74,6 @@ This library provides interfaces for read-only/mutable bimap:
   biMap.values // ["1", "2", "3"]
   biMap[1] // "1"
   biMap.containsKey(4) // false
-  biMap.getOrDefault(4, "4") // "4"
   ```
 
 - Get the inverse view of bimap:

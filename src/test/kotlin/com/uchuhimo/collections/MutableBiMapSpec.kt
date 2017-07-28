@@ -110,19 +110,6 @@ object MutableBiMapSpec : SubjectSpek<MutableBiMap<Int, String>>({
                     assertThat(subject.containsKey(4), equalTo(false))
                 }
             }
-            on("remove existing entry") {
-                subject.remove(2, "2")
-                it("should not contain the specified entry") {
-                    assertThat(subject.containsKey(2), equalTo(false))
-                    assertThat(subject.containsValue("2"), equalTo(false))
-                }
-            }
-            on("remove entry, when key exists, and value is unbound") {
-                subject.remove(3, "4")
-                it("should not remove any entry") {
-                    assertThat(subject.containsKey(3), equalTo(true))
-                }
-            }
         }
         on("clear") {
             subject.clear()
