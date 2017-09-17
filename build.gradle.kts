@@ -1,4 +1,5 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import java.util.Properties
 import java.net.URL
 import org.junit.platform.gradle.plugin.FiltersExtension
@@ -16,17 +17,17 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
     repositories {
-        //maven { url = java.net.URI("http://maven.aliyun.com/nexus/content/groups/public") }
+        maven(url = "http://maven.aliyun.com/nexus/content/groups/public")
         jcenter()
     }
     dependencies {
-        classpath("org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4")
+        classpath("org.junit.platform:junit-platform-gradle-plugin:1.0.0-RC3")
         classpath("com.novoda:bintray-release:0.5.0")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.9.15")
     }
 }
 
-val junitPlatformVersion by extra("1.0.0-M4")
+val junitPlatformVersion by extra("1.0.0-RC3")
 
 var bintrayUserProperty by extra("")
 var bintrayKeyProperty by extra("")
@@ -41,10 +42,11 @@ plugins {
     `build-scan`
     java
     jacoco
-    kotlin("jvm") version "1.1.3-2"
+    kotlin("jvm") version "1.1.4-3"
     id("com.dorongold.task-tree") version "1.3"
     id("com.diffplug.gradle.spotless") version "3.4.0"
     id("io.spring.dependency-management") version "1.0.3.RELEASE"
+    id("com.github.ben-manes.versions") version "0.15.0"
 }
 
 apply {
@@ -57,12 +59,12 @@ group = "com.uchuhimo"
 version = "1.0"
 
 repositories {
-    //maven { url = java.net.URI("http://maven.aliyun.com/nexus/content/groups/public") }
+    maven(url = "http://maven.aliyun.com/nexus/content/groups/public")
     jcenter()
 }
 
 val wrapper by tasks.creating(Wrapper::class) {
-    distributionUrl = "https://repo.gradle.org/gradle/dist-snapshots/gradle-kotlin-dsl-4.1-20170707032407+0000-all.zip"
+    distributionUrl = "https://repo.gradle.org/gradle/dist-snapshots/gradle-kotlin-dsl-4.2-20170901130305+0000-all.zip"
 }
 
 java {
@@ -98,7 +100,7 @@ configure<DependencyManagementExtension> {
         // 20.0 is the last release that supports JDK 1.6
         dependency("com.google.guava:guava:20.0")
 
-        dependencySet("org.jetbrains.kotlin:1.1.3-2") {
+        dependencySet("org.jetbrains.kotlin:1.1.4-3") {
             entry("kotlin-stdlib")
             entry("kotlin-reflect")
         }
@@ -106,14 +108,14 @@ configure<DependencyManagementExtension> {
 
     manage(configurations.testImplementation) {
         dependencies {
-            dependency("org.jetbrains.kotlin:kotlin-test:1.1.3-2")
+            dependency("org.jetbrains.kotlin:kotlin-test:1.1.4-3")
 
-            dependency("com.natpryce:hamkrest:1.4.1.0")
+            dependency("com.natpryce:hamkrest:1.4.2.0")
             dependency("org.hamcrest:hamcrest-all:1.3")
 
             dependency("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
 
-            dependencySet("org.jetbrains.spek:1.1.2") {
+            dependencySet("org.jetbrains.spek:1.1.4") {
                 entry("spek-api")
                 entry("spek-data-driven-extension")
                 entry("spek-subject-extension")
@@ -262,6 +264,13 @@ tasks {
         } else if (name == "publishToMavenLocal") {
             install.dependsOn(this)
         }
+    }
+}
+
+tasks {
+    "dependencyUpdates"(DependencyUpdatesTask::class) {
+        revision = "release"
+        outputFormatter = "plain"
     }
 }
 
