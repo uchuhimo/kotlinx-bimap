@@ -21,13 +21,13 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("org.junit.platform:junit-platform-gradle-plugin:1.0.0-RC3")
+        classpath("org.junit.platform:junit-platform-gradle-plugin:1.0.0")
         classpath("com.novoda:bintray-release:0.5.0")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.9.15")
     }
 }
 
-val junitPlatformVersion by extra("1.0.0-RC3")
+val junitPlatformVersion by extra("1.0.0")
 
 var bintrayUserProperty by extra("")
 var bintrayKeyProperty by extra("")
@@ -42,7 +42,7 @@ plugins {
     `build-scan`
     java
     jacoco
-    kotlin("jvm") version "1.1.4-3"
+    kotlin("jvm") version "1.1.50"
     id("com.dorongold.task-tree") version "1.3"
     id("com.diffplug.gradle.spotless") version "3.4.0"
     id("io.spring.dependency-management") version "1.0.3.RELEASE"
@@ -100,7 +100,7 @@ configure<DependencyManagementExtension> {
         // 20.0 is the last release that supports JDK 1.6
         dependency("com.google.guava:guava:20.0")
 
-        dependencySet("org.jetbrains.kotlin:1.1.4-3") {
+        dependencySet("org.jetbrains.kotlin:1.1.50") {
             entry("kotlin-stdlib")
             entry("kotlin-reflect")
         }
@@ -108,14 +108,14 @@ configure<DependencyManagementExtension> {
 
     manage(configurations.testImplementation) {
         dependencies {
-            dependency("org.jetbrains.kotlin:kotlin-test:1.1.4-3")
+            dependency("org.jetbrains.kotlin:kotlin-test:1.1.50")
 
             dependency("com.natpryce:hamkrest:1.4.2.0")
             dependency("org.hamcrest:hamcrest-all:1.3")
 
             dependency("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
 
-            dependencySet("org.jetbrains.spek:1.1.4") {
+            dependencySet("org.jetbrains.spek:1.1.5") {
                 entry("spek-api")
                 entry("spek-data-driven-extension")
                 entry("spek-subject-extension")
