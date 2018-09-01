@@ -1,10 +1,11 @@
 pluginManagement {
     repositories {
-        maven {
-            url "http://maven.aliyun.com/nexus/content/repositories/gradle-plugin"
-        }
+        jcenter()
+        aliyunGradlePluginPortal()
         gradlePluginPortal()
     }
 }
 
 rootProject.name = "kotlinx-bimap"
+
+enableFeaturePreview("STABLE_PUBLISHING")

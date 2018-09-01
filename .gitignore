@@ -172,7 +172,6 @@ Temporary Items
 .gradle
 build/
 build-eclipse/
-*/gradle*
 
 # Ignore Gradle GUI config
 gradle-app.setting

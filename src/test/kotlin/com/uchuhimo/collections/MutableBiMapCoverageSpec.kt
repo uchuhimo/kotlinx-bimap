@@ -41,8 +41,8 @@ object MutableBiMapCoverageSpec : Spek({
         assertThat({ guavaBiMap.forcePut(1, null) }, throws<NullPointerException>())
         assertThat({ guavaBiMap.forcePut(null, null) }, throws<NullPointerException>())
         assertNull(guavaBiMap.forcePut(1, ""))
-        assertThat({ guavaBiMap.put(null, "") }, throws<NullPointerException>())
-        assertThat({ guavaBiMap.put(1, null) }, throws<NullPointerException>())
-        assertThat({ guavaBiMap.put(null, null) }, throws<NullPointerException>())
+        assertThat({ guavaBiMap[null] = "" }, throws<NullPointerException>())
+        assertThat({ guavaBiMap[1] = null }, throws<NullPointerException>())
+        assertThat({ guavaBiMap[null] = null }, throws<NullPointerException>())
     }
 })

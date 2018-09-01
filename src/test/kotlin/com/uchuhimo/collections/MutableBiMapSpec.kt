@@ -65,7 +65,7 @@ object MutableBiMapSpec : SubjectSpek<MutableBiMap<Int, String>>({
             }
             on("put entry, when key is unbound, and value exists") {
                 it("should throw IllegalArgumentException") {
-                    assertThat({ subject.put(4, "3") }, throws<IllegalArgumentException>())
+                     assertThat({ subject[4] = "3" }, throws<IllegalArgumentException>())
                 }
             }
             on("force put entry, when key is unbound, and value exists") {

@@ -1,154 +1,108 @@
-import com.diffplug.gradle.spotless.SpotlessExtension
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import java.util.Properties
-import java.net.URL
-import org.junit.platform.gradle.plugin.FiltersExtension
-import org.junit.platform.gradle.plugin.EnginesExtension
-import org.junit.platform.gradle.plugin.JUnitPlatformExtension
 import com.novoda.gradle.release.PublishExtension
-import groovy.lang.Closure
-import io.spring.gradle.dependencymanagement.dsl.DependencyManagementConfigurer
+import io.spring.gradle.dependencymanagement.dsl.DependenciesHandler
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
-import io.spring.gradle.dependencymanagement.internal.dsl.StandardDependencyManagementExtension
+import io.spring.gradle.dependencymanagement.dsl.DependencySetHandler
 import org.jetbrains.dokka.DokkaConfiguration
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.dokka.gradle.LinkMapping
+import org.jetbrains.kotlin.gradle.dsl.Coroutines
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.URL
+
+val bintrayUserProperty by extra { getPrivateProperty("bintrayUser") }
+val bintrayKeyProperty by extra { getPrivateProperty("bintrayKey") }
 
 buildscript {
     repositories {
-        maven(url = "http://maven.aliyun.com/nexus/content/groups/public")
+        aliyunMaven()
         jcenter()
+        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
     }
     dependencies {
-        classpath("org.junit.platform:junit-platform-gradle-plugin:1.0.0")
-        classpath("com.novoda:bintray-release:0.5.0")
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.9.15")
+        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:${Versions.bintrayPlugin}")
+        classpath("com.novoda:bintray-release:${Versions.bintrayRelease}")
     }
-}
-
-val junitPlatformVersion by extra("1.0.0")
-
-var bintrayUserProperty by extra("")
-var bintrayKeyProperty by extra("")
-if (project.rootProject.file("private.properties").exists()) {
-    val properties = Properties()
-    properties.load(project.rootProject.file("private.properties").inputStream())
-    bintrayUserProperty = properties.getProperty("bintrayUser")
-    bintrayKeyProperty = properties.getProperty("bintrayKey")
 }
 
 plugins {
     `build-scan`
     java
     jacoco
-    kotlin("jvm") version "1.1.50"
-    id("com.dorongold.task-tree") version "1.3"
-    id("com.diffplug.gradle.spotless") version "3.4.0"
-    id("io.spring.dependency-management") version "1.0.3.RELEASE"
-    id("com.github.ben-manes.versions") version "0.15.0"
+    kotlin("jvm") version Versions.kotlin
+    id("com.dorongold.task-tree") version Versions.taskTree
+    id("com.diffplug.gradle.spotless") version Versions.spotless
+    id("com.github.ben-manes.versions") version Versions.dependencyUpdate
+    id("io.spring.dependency-management") version Versions.dependencyManagement
+    id("org.jetbrains.dokka") version Versions.dokka
 }
 
-apply {
-    plugin("org.junit.platform.gradle.plugin")
-    plugin("com.novoda.bintray-release")
-    plugin("org.jetbrains.dokka")
-}
+apply(plugin = "com.novoda.bintray-release")
+apply(plugin = "com.jfrog.bintray")
 
 group = "com.uchuhimo"
 version = "1.0"
 
 repositories {
-    maven(url = "http://maven.aliyun.com/nexus/content/groups/public")
+    aliyunMaven()
     jcenter()
 }
 
-val wrapper by tasks.creating(Wrapper::class) {
-    distributionUrl = "https://repo.gradle.org/gradle/dist-snapshots/gradle-kotlin-dsl-4.2-20170901130305+0000-all.zip"
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_6
-    targetCompatibility = JavaVersion.VERSION_1_6
-}
-
-configure<JUnitPlatformExtension> {
-    filters {
-        engines {
-            include("spek")
-        }
-    }
-}
-
-// extension for configuration
-fun JUnitPlatformExtension.filters(setup: FiltersExtension.() -> Unit) {
-    when (this) {
-        is ExtensionAware -> extensions.getByType(FiltersExtension::class.java).setup()
-        else -> throw Exception("${this::class} must be an instance of ExtensionAware")
-    }
-}
-
-fun FiltersExtension.engines(setup: EnginesExtension.() -> Unit) {
-    when (this) {
-        is ExtensionAware -> extensions.getByType(EnginesExtension::class.java).setup()
-        else -> throw Exception("${this::class} must be an instance of ExtensionAware")
-    }
+val wrapper by tasks.registering(Wrapper::class)
+wrapper {
+    gradleVersion = "4.10"
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 configure<DependencyManagementExtension> {
     dependencies {
-        // 20.0 is the last release that supports JDK 1.6
-        dependency("com.google.guava:guava:20.0")
-
-        dependencySet("org.jetbrains.kotlin:1.1.50") {
-            entry("kotlin-stdlib")
-            entry("kotlin-reflect")
-        }
+        dependency(kotlin("stdlib", Versions.kotlin))
+        dependency("com.google.guava:guava:${Versions.guava}")
     }
 
-    manage(configurations.testImplementation) {
+    val testImplementation by configurations
+    testImplementation.withDependencies {
         dependencies {
-            dependency("org.jetbrains.kotlin:kotlin-test:1.1.50")
+            dependency(kotlin("test", Versions.kotlin))
+            dependency("com.natpryce:hamkrest:${Versions.hamkrest}")
 
-            dependency("com.natpryce:hamkrest:1.4.2.0")
-            dependency("org.hamcrest:hamcrest-all:1.3")
+            dependency(junit("platform", "launcher", Versions.junitPlatform))
 
-            dependency("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
-
-            dependencySet("org.jetbrains.spek:1.1.5") {
-                entry("spek-api")
-                entry("spek-data-driven-extension")
-                entry("spek-subject-extension")
-                entry("spek-junit-platform-engine")
+            arrayOf("api", "data-driven-extension", "subject-extension", "junit-platform-engine").forEach { name ->
+                dependency(spek(name, Versions.spek))
             }
         }
     }
 }
 
-fun DependencyManagementExtension.manage(
-        configuration: Configuration,
-        handler: DependencyManagementConfigurer.() -> Unit) {
-    this as StandardDependencyManagementExtension
-    methodMissing(configuration.name, arrayOf(delegateClosureOf(handler)))
-}
-
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation(kotlin("stdlib"))
     implementation("com.google.guava:guava")
 
-    testImplementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("com.natpryce:hamkrest")
-    testImplementation("org.jetbrains.spek:spek-api")
-    testImplementation("org.jetbrains.spek:spek-data-driven-extension")
-    testImplementation("org.jetbrains.spek:spek-subject-extension")
+    arrayOf("api", "data-driven-extension", "subject-extension").forEach { name ->
+        testImplementation(spek(name))
+    }
 
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testRuntimeOnly("org.jetbrains.spek:spek-junit-platform-engine")
+    testRuntimeOnly(junit("platform", "launcher"))
+    testRuntimeOnly(spek("junit-platform-engine"))
+}
+
+java {
+    sourceCompatibility = Versions.java
+    targetCompatibility = Versions.java
+}
+
+val test by tasks.existing(Test::class)
+test {
+    useJUnitPlatform()
+    testLogging.showStandardStreams = true
 }
 
 if (System.getenv().containsKey("JDK7_HOME")) {
     val Jdk7Home = System.getenv()["JDK7_HOME"]
-    tasks.withType(JavaCompile::class.java) {
+    tasks.withType<JavaCompile> {
         println("$name: use JDK7 to compile")
         options.apply {
             isFork = true
@@ -159,82 +113,64 @@ if (System.getenv().containsKey("JDK7_HOME")) {
             }
         }
     }
-    tasks.withType(KotlinCompile::class.java) {
+    tasks.withType<KotlinCompile> {
         println("$name: use JDK7 to compile")
         kotlinOptions.jdkHome = System.getenv()["JDK7_HOME"]
     }
 }
 
-tasks.withType(JavaCompile::class.java) {
+tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
-tasks.withType(Test::class.java) {
-    testLogging.showStandardStreams = true
-}
-
-tasks.withType(KotlinCompile::class.java) {
+tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "1.6"
-        apiVersion = "1.1"
-        languageVersion = "1.1"
+        jvmTarget = Versions.java.toString()
+        apiVersion = Versions.kotlinApi
+        languageVersion = Versions.kotlinApi
     }
 }
 
-configure<SpotlessExtension> {
+spotless {
     kotlin {
-        ktlint("0.8.3")
+        ktlint(Versions.ktlint)
         trimTrailingWhitespace()
         endWithNewline()
         // licenseHeaderFile is unstable for Kotlin
         // (i.e. will remove `@file:JvmName` when formatting), disable it by default
-        //licenseHeaderFile(rootProject.file("config/spotless/apache-license-2.0.kt"))
+        //licenseHeaderFile rootProject.file("config/spotless/apache-license-2.0.kt")
     }
 }
 
-afterEvaluate {
-    tasks {
-        val junitPlatformTest = "junitPlatformTest"(JavaExec::class)
-        configure<JacocoPluginExtension> {
-            toolVersion = "0.7.9"
-            applyTo(junitPlatformTest)
-        }
-        val jacocoJunitPlatformReport by creating(JacocoReport::class) {
-            executionData(junitPlatformTest)
-            sourceSets(java.sourceSets["main"])
-            sourceDirectories = files(java.sourceSets["main"].allSource.srcDirs)
-            classDirectories = files(java.sourceSets["main"].output)
-            reports {
-                xml.isEnabled = true
-                html.isEnabled = true
-            }
-        }
-        "check"().dependsOn(jacocoJunitPlatformReport)
+jacoco {
+    toolVersion = Versions.jacoco
+}
+
+val jacocoTestReport by tasks.existing(JacocoReport::class) {
+    reports {
+        xml.isEnabled = true
+        html.isEnabled = true
     }
 }
 
-tasks {
-    "dokka"(DokkaTask::class) {
-        outputFormat = "html"
-        outputDirectory = "javadoc"(Javadoc::class).destinationDir.path
-        jdkVersion = 6
-        linkMapping(delegateAnyClosureOf<LinkMapping> {
-            dir = project.rootDir.toPath().resolve("src/main/kotlin").toFile().path
-            url = "https://github.com/uchuhimo/kotlinx-bimap/blob/v${project.version}/src/main/kotlin"
-            suffix = "#L"
-        })
-        externalDocumentationLink(
-                delegateAnyClosureOf<DokkaConfiguration.ExternalDocumentationLink.Builder> {
-                    url = URL("https://google.github.io/guava/releases/20.0/api/docs/")
-                })
-    }
+val check by tasks.existing {
+    dependsOn(jacocoTestReport)
 }
 
-fun <T> Any.delegateAnyClosureOf(action: T.() -> Unit) =
-        object : Closure<Any?>(this, this) {
-            @Suppress("UNCHECKED_CAST")
-            fun doCall() = (delegate as T).action()
-        }
+val dokka by tasks.existing(DokkaTask::class) {
+    outputFormat = "html"
+    val javadoc: Javadoc by tasks
+    outputDirectory = javadoc.destinationDir!!.path
+    jdkVersion = 6
+    linkMapping(delegateClosureOf<LinkMapping> {
+        dir = "src/main/kotlin"
+        url = "https://github.com/uchuhimo/konf/blob/v${project.version}/src/main/kotlin"
+        suffix = "#L"
+    })
+    externalDocumentationLink(delegateClosureOf<DokkaConfiguration.ExternalDocumentationLink.Builder> {
+        url = URL("https://google.github.io/guava/releases/${Versions.guava}/api/docs/")
+    })
+}
 
 configure<PublishExtension> {
     userOrg = "uchuhimo"
@@ -249,32 +185,25 @@ configure<PublishExtension> {
     dryRun = false
 }
 
-afterEvaluate {
-    tasks {
-        "mavenJavadocJar"().dependsOn("dokka")
-        "bintrayUpload"().dependsOn("jar", "mavenJavadocJar", "mavenSourcesJar", "check")
+tasks {
+    val install by registering
+    afterEvaluate {
+        val mavenJavadocJar by existing
+        val publishToMavenLocal by existing
+        val bintrayUpload by existing
+        mavenJavadocJar { dependsOn(dokka) }
+        install.configure { dependsOn(publishToMavenLocal) }
+        bintrayUpload { dependsOn(check, install) }
     }
 }
 
-tasks {
-    val install by creating
-    whenObjectAdded {
-        if (name == "generatePomFileForMavenPublication") {
-            "bintrayUpload"().dependsOn(this@whenObjectAdded)
-        } else if (name == "publishToMavenLocal") {
-            install.dependsOn(this)
-        }
-    }
-}
-
-tasks {
-    "dependencyUpdates"(DependencyUpdatesTask::class) {
-        revision = "release"
-        outputFormatter = "plain"
-    }
+val dependencyUpdates by tasks.existing(DependencyUpdatesTask::class)
+dependencyUpdates {
+    revision = "release"
+    outputFormatter = "plain"
 }
 
 buildScan {
-    setLicenseAgreementUrl("https://gradle.com/terms-of-service")
-    setLicenseAgree("yes")
+    setTermsOfServiceUrl("https://gradle.com/terms-of-service")
+    setTermsOfServiceAgree("yes")
 }
