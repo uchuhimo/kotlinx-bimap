@@ -31,7 +31,7 @@ import com.google.common.collect.BiMap as GuavaBiMap
  * @return a Guava bimap
  */
 fun <K, V> MutableBiMap<K, V>.asGuavaBiMap(): GuavaBiMap<K, V> =
-         (this as? MutableBiMapWrapper)?.delegate ?: GuavaBiMapWrapper(this)
+    (this as? MutableBiMapWrapper)?.delegate ?: GuavaBiMapWrapper(this)
 
 /**
  * Views a Guava bimap as a mutable bimap. The original Guava bimap shares same
@@ -42,7 +42,7 @@ fun <K, V> MutableBiMap<K, V>.asGuavaBiMap(): GuavaBiMap<K, V> =
  * @return a mutable bimap
  */
 fun <K, V> GuavaBiMap<K, V>.asMutableBiMap(): MutableBiMap<K, V> =
-        (this as? GuavaBiMapWrapper)?.delegate ?: MutableBiMapWrapper(this)
+    (this as? GuavaBiMapWrapper)?.delegate ?: MutableBiMapWrapper(this)
 
 /**
  * Returns a new mutable bimap with the specified contents, given as a list of pairs
@@ -69,7 +69,7 @@ fun <K, V> mutableBiMapOf(vararg pairs: Pair<K, V>): MutableBiMap<K, V> = HashBi
 fun <K, V> Map<K, V>.toMutableBiMap(): MutableBiMap<K, V> = HashBiMap.create<K, V>(size).asMutableBiMap().apply { putAll(this@toMutableBiMap) }
 
 internal class MutableBiMapWrapper<K, V>(internal val delegate: GuavaBiMap<K, V>) :
-        MutableBiMap<K, V>, MutableMap<K, V> by delegate {
+    MutableBiMap<K, V>, MutableMap<K, V> by delegate {
     override val inverse: MutableBiMap<V, K> = InverseWrapper(this)
 
     override val values: MutableSet<V> = delegate.values
@@ -82,13 +82,13 @@ internal class MutableBiMapWrapper<K, V>(internal val delegate: GuavaBiMap<K, V>
 
     companion object {
         private class InverseWrapper<K, V>(private val wrapper: MutableBiMapWrapper<V, K>) :
-                MutableBiMap<K, V>, MutableMap<K, V> by wrapper.delegate.inverse() {
+            MutableBiMap<K, V>, MutableMap<K, V> by wrapper.delegate.inverse() {
             override val inverse: MutableBiMap<V, K> = wrapper
 
             override val values: MutableSet<V> = wrapper.delegate.inverse().values
 
             override fun forcePut(key: K, value: V): V? =
-                    wrapper.delegate.inverse().forcePut(key, value)
+                wrapper.delegate.inverse().forcePut(key, value)
 
             override fun equals(other: Any?): Boolean = equals(this, other)
 
@@ -98,7 +98,7 @@ internal class MutableBiMapWrapper<K, V>(internal val delegate: GuavaBiMap<K, V>
 }
 
 internal class GuavaBiMapWrapper<K, V>(internal val delegate: MutableBiMap<K, V>) :
-        GuavaBiMap<K, V> {
+    GuavaBiMap<K, V> {
     override fun putAll(from: Map<out K, V>) = delegate.putAll(from)
 
     override val size: Int get() = delegate.size

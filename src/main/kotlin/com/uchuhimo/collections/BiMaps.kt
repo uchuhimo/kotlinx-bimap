@@ -35,12 +35,12 @@ fun <K, V> emptyBiMap(): BiMap<K, V> = @Suppress("UNCHECKED_CAST") (emptyBiMap a
  * @return a new read-only bimap
  */
 fun <K, V> Map<K, V>.toBiMap(): BiMap<K, V> =
-        if (isNotEmpty()) {
-            val inversePairs = entries.map { (key, value) -> value to key }.toMap()
-            BiMapImpl(this, inversePairs)
-        } else {
-            emptyBiMap()
-        }
+    if (isNotEmpty()) {
+        val inversePairs = entries.map { (key, value) -> value to key }.toMap()
+        BiMapImpl(this, inversePairs)
+    } else {
+        emptyBiMap()
+    }
 
 /**
  * Returns a new read-only bimap with the specified contents, given as a list of pairs
@@ -64,10 +64,10 @@ fun <K, V> biMapOf(vararg pairs: Pair<K, V>): BiMap<K, V> = pairs.toMap().toBiMa
  * @return a new read-only bimap
  */
 fun <K, V> biMapOf(pair: Pair<K, V>): BiMap<K, V> =
-        BiMapImpl(mapOf(pair), mapOf(pair.second to pair.first))
+    BiMapImpl(mapOf(pair), mapOf(pair.second to pair.first))
 
 private class BiMapImpl<K, V> private constructor(delegate: Map<K, V>) :
-        BiMap<K, V>, Map<K, V> by delegate {
+    BiMap<K, V>, Map<K, V> by delegate {
     constructor(forward: Map<K, V>, backward: Map<V, K>) : this(forward) {
         _inverse = BiMapImpl(backward, this)
     }

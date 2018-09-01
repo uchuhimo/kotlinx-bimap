@@ -30,13 +30,13 @@ object MutableBiMapCoverageSpec : Spek({
         assertThat(guavaBiMap, equalTo(guavaBiMap))
         assertThat(guavaBiMap, !equalTo(mapOf<Int, String>()))
         assertThat(GuavaBiMapWrapper(mutableBiMapOf<Int, String?>(1 to null)),
-                !equalTo(GuavaBiMapWrapper(mutableBiMapOf<Int, String?>(1 to "string"))))
+            !equalTo(GuavaBiMapWrapper(mutableBiMapOf<Int, String?>(1 to "string"))))
         assertThat(GuavaBiMapWrapper(mutableBiMapOf<Int, String?>(1 to null)),
-                !equalTo(GuavaBiMapWrapper(mutableBiMapOf<Int, String?>())))
+            !equalTo(GuavaBiMapWrapper(mutableBiMapOf<Int, String?>())))
         assertThat(GuavaBiMapWrapper(mutableBiMapOf<Int, String?>(1 to null)),
-                equalTo(GuavaBiMapWrapper(mutableBiMapOf<Int, String?>(1 to null))))
+            equalTo(GuavaBiMapWrapper(mutableBiMapOf<Int, String?>(1 to null))))
         assertThat(GuavaBiMapWrapper(mutableBiMapOf<Int?, String?>(null to null)),
-                !equalTo(GuavaBiMapWrapper(mutableBiMapOf<Int?, String?>())))
+            !equalTo(GuavaBiMapWrapper(mutableBiMapOf<Int?, String?>())))
         assertThat({ guavaBiMap.forcePut(null, "") }, throws<NullPointerException>())
         assertThat({ guavaBiMap.forcePut(1, null) }, throws<NullPointerException>())
         assertThat({ guavaBiMap.forcePut(null, null) }, throws<NullPointerException>())

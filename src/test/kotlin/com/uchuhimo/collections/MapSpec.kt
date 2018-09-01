@@ -44,7 +44,7 @@ object MapSpec : SubjectSpek<Map<Int, String>>({
         }
         it("should contain all specified entries") {
             assertThat(subject.entries.map { it.key to it.value }.toSet(),
-                    equalTo(setOf(1 to "1", 2 to "2", 3 to "3")))
+                equalTo(setOf(1 to "1", 2 to "2", 3 to "3")))
         }
         on("get with an existed key") {
             val key = 1

@@ -41,7 +41,7 @@ object BiMapSpec : SubjectSpek<BiMap<Int, String>>({
         }
         it("should have same hash code with another bimap with same content") {
             assertThat(subject.hashCode(),
-                    equalTo(biMapOf(1 to "1", 2 to "2", 3 to "3").hashCode()))
+                equalTo(biMapOf(1 to "1", 2 to "2", 3 to "3").hashCode()))
         }
         it("should contain all specified values") {
             assertThat(subject.values, equalTo(setOf("1", "2", "3")))

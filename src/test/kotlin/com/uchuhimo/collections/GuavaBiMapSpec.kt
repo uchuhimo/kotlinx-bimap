@@ -45,7 +45,7 @@ object GuavaBiMapSpec : SubjectSpek<GuavaBiMap<Int, String>>({
         }
         it("should have same hash code with another guava bimap with same content") {
             assertThat(subject.hashCode(),
-                    equalTo(HashBiMap.create(mapOf(1 to "1", 2 to "2", 3 to "3")).hashCode()))
+                equalTo(HashBiMap.create(mapOf(1 to "1", 2 to "2", 3 to "3")).hashCode()))
         }
         it("should contain all specified values") {
             assertThat(subject.values, equalTo(setOf("1", "2", "3")))
@@ -53,7 +53,7 @@ object GuavaBiMapSpec : SubjectSpek<GuavaBiMap<Int, String>>({
         on("inverse") {
             it("should map from specified values to specified keys") {
                 val expected: GuavaBiMap<String, Int> =
-                        HashBiMap.create(mapOf("1" to 1, "2" to 2, "3" to 3))
+                    HashBiMap.create(mapOf("1" to 1, "2" to 2, "3" to 3))
                 assertThat(subject.inverse(), equalTo(expected))
             }
         }
