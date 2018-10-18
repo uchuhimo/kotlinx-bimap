@@ -1,6 +1,7 @@
 # kotlinx-bimap
 
 [![Java 6+](https://img.shields.io/badge/Java-6+-4c7e9f.svg)](http://java.oracle.com)
+[![Maven metadata URL](https://img.shields.io/maven-metadata/v/http/central.maven.org/maven2/com/uchuhimo/kotlinx-bimap/maven-metadata.xml.svg)](https://search.maven.org/artifact/com.uchuhimo/kotlinx-bimap)
 [![Bintray](https://api.bintray.com/packages/uchuhimo/maven/kotlinx-bimap/images/download.svg)](https://bintray.com/uchuhimo/maven/kotlinx-bimap/_latestVersion)
 [![JitPack](https://jitpack.io/v/uchuhimo/kotlinx-bimap.svg)](https://jitpack.io/#uchuhimo/kotlinx-bimap)
 [![Build Status](https://travis-ci.org/uchuhimo/kotlinx-bimap.svg?branch=master)](https://travis-ci.org/uchuhimo/kotlinx-bimap)
@@ -121,44 +122,28 @@ The `forcePut` operation will silently remove any existing entry with the value 
 
 ## Using in your projects
 
-This library are published to  [JCenter](https://bintray.com/uchuhimo/maven/kotlinx-bimap) and [JitPack](https://jitpack.io/#uchuhimo/kotlinx-bimap).
+This library are published to [Maven Central](https://search.maven.org/artifact/com.uchuhimo/kotlinx-bimap), [JCenter](https://bintray.com/uchuhimo/maven/kotlinx-bimap) and [JitPack](https://jitpack.io/#uchuhimo/kotlinx-bimap).
 
 ### Maven
-
-Add Bintray JCenter repository to `<repositories>` section:
-
-```xml
-<repository>
-    <id>central</id>
-    <url>http://jcenter.bintray.com</url>
-</repository>
-```
-
-Add dependencies:
 
 ```xml
 <dependency>
   <groupId>com.uchuhimo</groupId>
   <artifactId>kotlinx-bimap</artifactId>
-  <version>1.1</version>
-  <type>pom</type>
+  <version>1.2</version>
 </dependency>
 ```
 
 ### Gradle
 
-Add Bintray JCenter repository:
-
 ```groovy
-repositories {
-    jcenter()
-}
+compile 'com.uchuhimo:kotlinx-bimap:1.2'
 ```
 
-Add dependencies:
+### Gradle Kotlin DSL
 
-```groovy
-compile 'com.uchuhimo:kotlinx-bimap:1.1'
+```kotlin
+compile(group = "com.uchuhimo", name = "kotlinx-bimap", version = "1.2")
 ```
 
 ## Building from source
