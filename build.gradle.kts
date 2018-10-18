@@ -194,7 +194,7 @@ configure<PublishExtension> {
     bintrayUser = bintrayUserProperty
     bintrayKey = bintrayKeyProperty
     dryRun = false
-    override = true
+    override = false
 }
 
 configure<PublishingExtension> {
