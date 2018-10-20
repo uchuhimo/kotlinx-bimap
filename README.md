@@ -6,6 +6,7 @@
 [![JitPack](https://jitpack.io/v/uchuhimo/kotlinx-bimap.svg)](https://jitpack.io/#uchuhimo/kotlinx-bimap)
 [![Build Status](https://travis-ci.org/uchuhimo/kotlinx-bimap.svg?branch=master)](https://travis-ci.org/uchuhimo/kotlinx-bimap)
 [![codecov](https://codecov.io/gh/uchuhimo/kotlinx-bimap/branch/master/graph/badge.svg)](https://codecov.io/gh/uchuhimo/kotlinx-bimap)
+[![codebeat badge](https://codebeat.co/badges/92db60e6-08a4-443d-a7b8-1868c5bb7ab8)](https://codebeat.co/projects/github-com-uchuhimo-kotlinx-bimap-master)
 
 A bimap (bidirectional map) implementation for Kotlin.
 
@@ -122,7 +123,7 @@ The `forcePut` operation will silently remove any existing entry with the value 
 
 ## Using in your projects
 
-This library are published to [Maven Central](https://search.maven.org/artifact/com.uchuhimo/kotlinx-bimap), [JCenter](https://bintray.com/uchuhimo/maven/kotlinx-bimap) and [JitPack](https://jitpack.io/#uchuhimo/kotlinx-bimap).
+This library has been published to [Maven Central](https://search.maven.org/artifact/com.uchuhimo/kotlinx-bimap), [JCenter](https://bintray.com/uchuhimo/maven/kotlinx-bimap) and [JitPack](https://jitpack.io/#uchuhimo/kotlinx-bimap).
 
 ### Maven
 
@@ -170,4 +171,4 @@ gradlew clean install
 
 # License
 
-© uchuhimo, 2017. Licensed under an [Apache 2.0](./LICENSE) license.
+© uchuhimo, 2017-2018. Licensed under an [Apache 2.0](./LICENSE) license.
